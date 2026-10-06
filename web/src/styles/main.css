@@ -1,0 +1,558 @@
+@import url('https://fonts.googleapis.com/css2?family=Prata&family=Syne:wght@700;800&family=Chakra+Petch:wght@400;600;700&family=Abril+Fatface&family=Pirata+One&family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap&subset=latin-ext');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(220, 38, 38, 0.3);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 38, 38, 0.5);
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Theme Utility Classes — OUTSIDE @layer to survive tree-shaking
+   ═══════════════════════════════════════════════════════════════ */
+.bg-theme-base {
+  background-color: var(--theme-bg-base) !important;
+}
+
+.bg-theme-panel {
+  background-color: var(--theme-bg-panel) !important;
+}
+
+.bg-theme-card {
+  background-color: var(--theme-bg-card) !important;
+}
+
+.hover\:bg-theme-card-hover:hover {
+  background-color: var(--theme-bg-card-hover) !important;
+}
+
+.active\:bg-theme-card-active:active {
+  background-color: var(--theme-bg-card-active) !important;
+}
+
+.bg-theme-accent {
+  background-color: var(--theme-accent) !important;
+}
+
+.hover\:bg-theme-accent:hover {
+  background-color: var(--theme-accent) !important;
+}
+
+.text-theme-text-primary {
+  color: var(--theme-text-primary) !important;
+}
+
+.text-theme-text-secondary {
+  color: var(--theme-text-secondary) !important;
+}
+
+.text-theme-text-muted {
+  color: var(--theme-text-muted) !important;
+}
+
+.text-theme-accent {
+  color: var(--theme-accent) !important;
+}
+
+.hover\:text-theme-text-primary:hover {
+  color: var(--theme-text-primary) !important;
+}
+
+.hover\:text-theme-text-secondary:hover {
+  color: var(--theme-text-secondary) !important;
+}
+
+.border-theme-border {
+  border-color: var(--theme-border-base) !important;
+}
+
+.border-theme-accent {
+  border-color: var(--theme-accent) !important;
+}
+
+.border-theme-accent-border {
+  border-color: var(--theme-accent-border) !important;
+}
+
+.rounded-theme-panel {
+  border-radius: var(--theme-border-radius-panel) !important;
+}
+
+.rounded-theme-card {
+  border-radius: var(--theme-border-radius-card) !important;
+}
+
+.font-display {
+  font-family: var(--theme-font-display), sans-serif !important;
+}
+
+.font-sans {
+  font-family: var(--theme-font-sans), sans-serif !important;
+}
+
+/* ── Responsive panel ── */
+.appearance-panel {
+  width: 460px;
+}
+
+@media (max-width: 1400px) {
+  .appearance-panel {
+    width: 440px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .appearance-panel {
+    width: 420px;
+  }
+}
+
+@media (min-width: 1921px) {
+  .appearance-panel {
+    width: 500px;
+  }
+}
+
+/* ── Section tab switch animation (CEF-safe) ── */
+.section-fade-enter-active,
+.section-fade-leave-active {
+  -webkit-transition: opacity 0.15s ease, -webkit-transform 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.section-fade-enter-from {
+  opacity: 0;
+  -webkit-transform: translateY(8px);
+  transform: translateY(8px);
+}
+
+.section-fade-leave-to {
+  opacity: 0;
+  -webkit-transform: translateY(-8px);
+  transform: translateY(-8px);
+}
+
+.section-fade-enter-to,
+.section-fade-leave-from {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+/* ── SectionCard slide animation (CEF-safe, no max-height jank) ── */
+.section-slide-enter-active {
+  -webkit-transition: opacity 0.18s ease, -webkit-transform 0.18s ease;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.section-slide-leave-active {
+  -webkit-transition: opacity 0.12s ease, -webkit-transform 0.12s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.section-slide-enter-from {
+  opacity: 0;
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+}
+
+.section-slide-leave-to {
+  opacity: 0;
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+}
+
+.section-slide-enter-to,
+.section-slide-leave-from {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+/* ── LightControlPanel Dynamic Animations ── */
+/* Slide in from right (Sidebar is on the right) */
+.panel-slide-left-enter-active, .panel-slide-left-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.panel-slide-left-enter-from, .panel-slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* Slide in from left (Sidebar is on the left) */
+.panel-slide-right-enter-active, .panel-slide-right-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.panel-slide-right-enter-from, .panel-slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* ========================================================================== */
+/* DT GRID INVENTORY-STYLE APOCALYPSE UI                                     */
+/* ========================================================================== */
+html, body, #app {
+  background: transparent !important;
+}
+
+body {
+  font-family: var(--theme-font-sans), Arial, sans-serif;
+  color: var(--theme-text-primary);
+}
+
+/* Thin survival-terminal scrollbar */
+::-webkit-scrollbar { width: 3px !important; height: 3px !important; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.025) !important; }
+::-webkit-scrollbar-thumb {
+  background: rgba(183,155,88,0.46) !important;
+  border-radius: 0 !important;
+}
+
+/* No luxury rounded glass. Every panel becomes a field terminal slab. */
+.rounded-theme-panel,
+.rounded-theme-card,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded {
+  border-radius: 1px !important;
+}
+
+.dt-apocalypse-main-panel,
+.dt-apocalypse-sidebar,
+.dt-apocalypse-utility-panel {
+  border-color: rgba(225, 229, 223, 0.10) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.42),
+    inset 0 0 30px rgba(0,0,0,0.24),
+    0 18px 44px rgba(0,0,0,0.34) !important;
+}
+
+.dt-apocalypse-main-panel::before,
+.dt-apocalypse-sidebar::before,
+.dt-apocalypse-utility-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -9;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.010) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 20% 0%, rgba(183,155,88,0.045), transparent 38%);
+  background-size: 28px 28px, 28px 28px, 100% 4px, 100% 100%;
+  opacity: 0.82;
+}
+
+.dt-apocalypse-main-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -8;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 0 56%, rgba(255,255,255,0.018) 56.2%, transparent 56.5%),
+    linear-gradient(180deg, rgba(7,9,10,0.92), rgba(6,8,9,0.82));
+}
+
+/* Frosted canvas is deliberately subdued to match DT GRID transparent panels. */
+.dt-apocalypse-main-panel canvas,
+.dt-apocalypse-sidebar canvas,
+.dt-apocalypse-utility-panel canvas {
+  opacity: 0.16 !important;
+  filter: saturate(0.45) contrast(1.06) !important;
+}
+
+/* Main center panel */
+.dt-apocalypse-main-panel {
+  width: 430px !important;
+  background: rgba(6,8,9,0.76) !important;
+}
+
+/* Side rails */
+.dt-apocalypse-sidebar {
+  width: 64px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  gap: 7px !important;
+  background: rgba(6,8,9,0.76) !important;
+}
+
+.dt-apocalypse-sidebar button,
+.dt-apocalypse-sidebar > div[class*='w-12'] {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 1px !important;
+  background: rgba(10,12,13,0.72) !important;
+  border-color: rgba(222,226,220,0.09) !important;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.18) !important;
+}
+
+.dt-apocalypse-sidebar button:hover {
+  transform: none !important;
+  border-color: rgba(183,155,88,0.52) !important;
+  background: rgba(34,31,24,0.70) !important;
+}
+
+.dt-apocalypse-sidebar button.text-theme-accent,
+.dt-apocalypse-sidebar button[class*='text-theme-accent'] {
+  border-color: rgba(183,155,88,0.65) !important;
+  background: linear-gradient(135deg, rgba(183,155,88,0.13), rgba(8,10,11,0.72)) !important;
+  box-shadow: inset 3px 0 0 rgba(183,155,88,0.82) !important;
+}
+
+/* Tooltips */
+.dt-apocalypse-sidebar .group > div[class*='opacity-0'] {
+  border-radius: 1px !important;
+  background: rgba(6,8,9,0.96) !important;
+  border-color: rgba(183,155,88,0.32) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.42) !important;
+}
+
+/* Header */
+.dt-apocalypse-header {
+  min-height: 92px;
+  padding: 14px 18px 12px !important;
+  align-items: stretch !important;
+  background:
+    linear-gradient(90deg, rgba(183,155,88,0.08), transparent 70%),
+    rgba(5,7,8,0.62) !important;
+  border-bottom: 1px solid rgba(225,229,223,0.09) !important;
+}
+
+.dt-apocalypse-brandrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.dt-apocalypse-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(222,225,220,0.54);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dt-apocalypse-logo {
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+  opacity: 0.92;
+}
+
+.dt-apocalypse-index {
+  color: #b79b58;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.dt-apocalypse-header-title {
+  width: 100%;
+  color: #e7e9e5 !important;
+  -webkit-text-fill-color: #e7e9e5 !important;
+  background: none !important;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.64) !important;
+  text-align: left !important;
+  line-height: 1 !important;
+}
+
+.dt-apocalypse-header-subtitle {
+  margin-top: 5px;
+  color: rgba(183,155,88,0.58);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Section cards */
+.dt-apocalypse-card,
+[class*='bg-theme-card'] {
+  border-radius: 1px !important;
+}
+
+.dt-apocalypse-card {
+  background: rgba(9,11,12,0.68) !important;
+  border-color: rgba(222,226,220,0.08) !important;
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.18) !important;
+}
+
+.dt-apocalypse-card > button {
+  min-height: 43px;
+  padding: 7px 10px !important;
+  border-left: 2px solid rgba(183,155,88,0.26);
+  background: linear-gradient(90deg, rgba(183,155,88,0.045), transparent 60%);
+}
+
+.dt-apocalypse-card h2 {
+  color: rgba(225,228,223,0.72) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.13em !important;
+}
+
+.dt-apocalypse-card button div[class*='w-8'] {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 1px !important;
+  background: rgba(183,155,88,0.055) !important;
+}
+
+/* Steppers and form surfaces */
+.theme-aware-stepper,
+input[type='text'],
+input[type='number'],
+select,
+textarea {
+  border-radius: 1px !important;
+  background: rgba(4,6,7,0.62) !important;
+  border: 1px solid rgba(222,226,220,0.08) !important;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.22) !important;
+}
+
+.theme-aware-stepper {
+  border: 1px solid rgba(222,226,220,0.07) !important;
+}
+
+.theme-aware-stepper button {
+  border-radius: 0 !important;
+  border-right: 1px solid rgba(222,226,220,0.055);
+  border-left: 1px solid rgba(222,226,220,0.055);
+}
+
+/* Tactical slider */
+.range-slider-track {
+  height: 3px !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+.range-slider-fill {
+  border-radius: 0 !important;
+  background: linear-gradient(90deg, #7b6638, #b79b58) !important;
+  box-shadow: none !important;
+}
+.range-slider-thumb {
+  width: 8px !important;
+  height: 13px !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(235,225,198,0.78) !important;
+  background: #b79b58 !important;
+  box-shadow: 0 0 8px rgba(183,155,88,0.22) !important;
+}
+
+/* Color swatches */
+.theme-aware-swatch {
+  border-radius: 1px !important;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.45) !important;
+}
+
+/* Secondary utility panels */
+.dt-apocalypse-utility-panel {
+  background: rgba(6,8,9,0.84) !important;
+  padding: 14px !important;
+  border-radius: 1px !important;
+}
+
+/* Generic buttons: restrained, terminal-like */
+button {
+  font-family: var(--theme-font-sans), Arial, sans-serif;
+}
+button[class*='bg-theme-accent'],
+.save-outfit-btn {
+  border-radius: 1px !important;
+  background: linear-gradient(90deg, rgba(183,155,88,0.18), rgba(183,155,88,0.06)) !important;
+  border: 1px solid rgba(183,155,88,0.36) !important;
+  color: #d7c18a !important;
+  box-shadow: none !important;
+}
+
+/* Save/exit semantic colors remain readable but subdued */
+button[class*='emerald'] { filter: saturate(0.58) brightness(0.92); }
+button[class*='red'] { filter: saturate(0.65) brightness(0.92); }
+
+/* Modals */
+.dt-apocalypse-modal-backdrop {
+  background: rgba(0,0,0,0.78) !important;
+  backdrop-filter: blur(2px);
+}
+.dt-apocalypse-modal {
+  border-radius: 1px !important;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 4px),
+    rgba(7,9,10,0.97) !important;
+  border: 1px solid rgba(222,226,220,0.10) !important;
+  box-shadow: 0 26px 60px rgba(0,0,0,0.72), inset 3px 0 0 rgba(183,155,88,0.46) !important;
+}
+
+/* Keep the UI compact at 1080p while preserving usability */
+@media (max-height: 900px) {
+  .dt-apocalypse-main-panel { width: 405px !important; }
+  .dt-apocalypse-header { min-height: 76px; padding: 10px 14px !important; }
+  .dt-apocalypse-sidebar { width: 58px !important; padding-top: 9px !important; padding-bottom: 9px !important; }
+  .dt-apocalypse-sidebar button,
+  .dt-apocalypse-sidebar > div[class*='w-12'] { width: 36px !important; height: 36px !important; }
+}
+
+
+/* DT GRID creator action bar ------------------------------------------------ */
+.dt-creator-actionbar {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 30;
+  border-top: 1px solid rgba(var(--theme-accent-rgb), 0.20);
+  background: linear-gradient(180deg, rgba(6, 8, 9, 0.88), rgba(4, 6, 7, 0.96));
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.22);
+}
+
+.dt-creator-actionbar-inner {
+  min-height: 62px;
+}
+
+.dt-creator-actionbar button {
+  min-height: 42px;
+  border-radius: 1px !important;
+  font-family: var(--theme-font-display, sans-serif);
+  font-size: 12px !important;
+  letter-spacing: 0.12em;
+}
+
+.theme-creator .dt-creator-actionbar button:last-child {
+  color: var(--theme-accent) !important;
+}
