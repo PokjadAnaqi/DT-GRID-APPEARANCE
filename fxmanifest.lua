@@ -2,11 +2,13 @@ fx_version 'cerulean'
 game "gta5"
 
 author "snakewiz & iLLeniumStudios"
-description "DT GRID APPEARANCE BETA 1 - Delta Horizon customization and clothing integration."
+description "DT GRID APPEARANCE - Delta Horizon customization and clothing integration."
 repository "https://github.com/PokjadAnaqi/DT-GRID-APPEARANCE"
-version "1.0.0-beta.1"
+version "1.0.0-beta.2"
 upstream_version "v5.7.0"
-dt_grid_integration "1.0.5.94"
+dt_grid_integration "1.0.5.112"
+dtlib_integration "1.4.0-beta.4"
+deltasec_integration "1.5.1-beta.3"
 lation_ui_integration "1.0.0"
 dt_apocalypse_ui "1.0.5"
 dt_creator_save_ui "1.0.5"
@@ -110,3 +112,4 @@ ui_page "web/dist/index.html"
 
 -- DT GRID clothing-as-items integration
 dependency "ox_inventory"
+
