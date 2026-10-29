@@ -1,3 +1,9 @@
+-- Reject pending model/skin work after logout or character replacement.
+local clothingSession = 0
+AddEventHandler('ox_inventory:clothing:resetSession', function()
+    clothingSession = clothingSession + 1
+end)
+
 local hashesComputed = false
 local PED_TATTOOS = {}
 local pedModelsByHash = {}
@@ -185,15 +191,21 @@ local function getPedAppearance(ped)
 end
 
 local function setPlayerModel(model)
+    local session = clothingSession
     if type(model) == "string" then model = joaat(model) end
 
     if IsModelInCdimage(model) then
         RequestModel(model)
-        while not HasModelLoaded(model) do Wait(0) end
+        while not HasModelLoaded(model) do
+            if session ~= clothingSession then return end
+            Wait(0)
+        end
+        if session ~= clothingSession then return end
 
         SetPlayerModel(cache.playerId, model)
         Wait(150)
         SetModelAsNoLongerNeeded(model)
+        if session ~= clothingSession then return end
 
         if isPedFreemodeModel(cache.ped) then
             SetPedDefaultComponentVariation(cache.ped)
@@ -379,12 +391,17 @@ local function setPedAppearance(ped, appearance)
         if appearance.hair then setPedHair(ped, appearance.hair, appearance.tattoos) end
         if appearance.eyeColor then setPedEyeColor(ped, appearance.eyeColor) end
         if appearance.tattoos then setPedTattoos(ped, appearance.tattoos) end
+        if ped == PlayerPedId() then
+            TriggerEvent('illenium-appearance:client:appearanceApplied', ped, appearance)
+        end
     end
 end
 
 local function setPlayerAppearance(appearance)
     if appearance then
-        setPlayerModel(appearance.model)
+        local session = clothingSession
+        local ped = setPlayerModel(appearance.model)
+        if session ~= clothingSession or not ped then return end
         setPedAppearance(cache.ped, appearance)
     end
 end
@@ -437,3 +454,4 @@ client = {
     getPedComponents = getPedComponents,
     getPedProps = getPedProps
 }
+
