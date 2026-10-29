@@ -1,5 +1,11 @@
 local client = client
 local reloadSkinTimer = GetGameTimer()
+local appearanceSession = 0
+local appearanceReady = false
+AddEventHandler('ox_inventory:clothing:resetSession', function()
+    appearanceSession = appearanceSession + 1
+    appearanceReady = false
+end)
 
 local function LoadPlayerUniform(reset)
     if reset then
@@ -57,9 +63,11 @@ local function LoadPlayerUniform(reset)
 end
 
 function InitAppearance()
+    appearanceReady = false
     Framework.UpdatePlayerData()
+    local session, character = appearanceSession, client.citizenid
     lib.callback("illenium-appearance:server:getAppearance", false, function(appearance)
-        if not appearance then
+        if not appearance or session ~= appearanceSession or character ~= client.citizenid then
             return
         end
 
@@ -317,21 +325,30 @@ end
 
 -- Reverse sync: when DT GRID equips/unequips a clothing item, persist the live
 -- appearance back to Illenium so respawn/relog does not restore stale clothing.
-local dtGridSyncPending = false
-AddEventHandler("ox_inventory:client:clothingChanged", function()
-    if not dtGridInventoryReady() or dtGridSyncPending then return end
+AddEventHandler("illenium-appearance:client:appearanceApplied", function(ped)
+    if ped == PlayerPedId() then appearanceReady = true end
+end)
 
-    dtGridSyncPending = true
+local dtGridSyncGeneration = 0
+AddEventHandler("ox_inventory:client:clothingChanged", function(context)
+    -- Only the inventory's active character may persist an equipment change.
+    -- Preview/model transitions and old timers must never overwrite the skin.
+    if not dtGridInventoryReady() or type(context) ~= "table" or context.persist ~= true then return end
+    dtGridSyncGeneration = dtGridSyncGeneration + 1
+    local generation, session = dtGridSyncGeneration, appearanceSession
+    local ped = context.ped
     CreateThread(function()
         Wait(400)
-        dtGridSyncPending = false
-
-        local ped = cache.ped
-        if not ped or ped == 0 or not DoesEntityExist(ped) then return end
-
+        if generation ~= dtGridSyncGeneration or session ~= appearanceSession or not appearanceReady then return end
+        if ped ~= cache.ped or ped ~= PlayerPedId() or not DoesEntityExist(ped) then return end
+        local cfg = dtGridInventoryConfig()
+        local ok, ready = pcall(function()
+            return exports[cfg.resource or "ox_inventory"]:isClothingSessionReady(context.session)
+        end)
+        if not ok or not ready then return end
         local appearance = client.getPedAppearance(ped)
         if appearance then
-            TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance)
+            TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance, { source = "inventory_equipment" })
         end
     end)
 end)
@@ -910,8 +927,10 @@ RegisterNetEvent("illenium-appearance:client:reloadSkin", function(bypassChecks)
 
     reloadSkinTimer = GetGameTimer()
     BackupPlayerStats()
+    local session, character = appearanceSession, client.citizenid
 
     lib.callback("illenium-appearance:server:getAppearance", false, function(appearance)
+        if session ~= appearanceSession or character ~= client.citizenid then return end
         if not appearance then
             return
         end
@@ -944,3 +963,4 @@ RegisterNetEvent("illenium-appearance:client:ClearStuckProps", function()
       end
     end
 end)
+
