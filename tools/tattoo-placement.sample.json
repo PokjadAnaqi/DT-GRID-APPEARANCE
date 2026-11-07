@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "zone": "ZONE_TORSO",
+  "uvPos": {
+    "x": 0.75,
+    "y": 0.55
+  },
+  "scale": {
+    "x": 0.127,
+    "y": 0.127
+  },
+  "rotation": 0,
+  "flipX": false,
+  "flipY": false
+}
