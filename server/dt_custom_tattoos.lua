@@ -194,106 +194,162 @@ lib.callback.register('dtgrid:tattoos:list', function(source)
     }
 end)
 
+-- Saving custom artwork is always a free, non-wearable draft.
+-- Paying for a design that has not been built and streamed would be misleading.
 lib.callback.register('dtgrid:tattoos:purchase', function(src, request)
     local config = settings()
-    if not config.Enabled then return fail('Tattoo editor is disabled') end
-    if not tableReady then return fail('Tattoo storage unavailable') end
+    if not config.Enabled or not tableReady then return fail('Tattoo studio unavailable') end
     if not nearShop(src) then return fail('Visit a Tattoo Studio to save your design') end
 
     local owner = playerId(src)
     if not owner then return fail('Character session is not ready') end
-    if purchases[owner] then return fail('Previous purchase is still being processed') end
+    if purchases[owner] then return fail('Previous request still processing') end
+
     local now = os.time()
     if now - (lastPurchase[owner] or 0) < (config.SaveCooldownSeconds or 10) then
         return fail('Please wait before saving another design')
     end
-    if type(request) ~= 'table' then return fail('Invalid request') end
-    if request.kind ~= 'image' and request.kind ~= 'text' then return fail('Invalid tattoo type') end
-    if type(request.label) ~= 'string' then return fail('Invalid tattoo label') end
+
+    if type(request) ~= 'table' or (request.kind ~= 'image' and request.kind ~= 'text') then
+        return fail('Invalid tattoo design')
+    end
+    if type(request.label) ~= 'string' then return fail('Invalid tattoo name') end
+
     local label = request.label:sub(1, 64):match('^%s*(.-)%s*$')
-    if not label or #label < 2 then return fail('Tattoo name is too short') end
     local transform = normalizeTransform(request.transform)
-    if not transform then return fail('Invalid tattoo placement') end
+    if not label or #label < 2 or not transform then return fail('Invalid tattoo metadata') end
     if request.kind == 'text' and #transform.text < 1 then return fail('Text cannot be empty') end
+
     if not validPng(request.image, config.MaxEncodedBytes or 360000)
         or not validPng(request.thumbnail, config.MaxThumbnailBytes or 40000) then
         return fail('Invalid or oversized PNG')
     end
 
     purchases[owner] = true
-    local debited = false
-    local refunded = false
     local ok, response = pcall(function()
         local count = MySQL.scalar.await(
-            'SELECT COUNT(*) FROM dtgrid_custom_tattoos WHERE citizenid = ?',
-            { owner }
+            'SELECT COUNT(*) FROM dtgrid_custom_tattoos WHERE citizenid = ?', { owner }
         ) or 0
         if count >= (config.MaxDesigns or 20) then return fail('Personal library is full') end
-        local price = config.Price or 300
-        if config.PurchaseEnabled and not Framework.HasMoney(src, config.MoneyType or 'cash', price) then
-            return fail(('Insufficient balance: %d %s required'):format(price, config.Currency or 'DTC'))
-        end
+        if playerId(src) ~= owner then return fail('Character changed during save') end
 
         local id = MySQL.insert.await([[
             INSERT INTO dtgrid_custom_tattoos
                 (citizenid, kind, label, image_png, thumbnail_png, transform_json, paid)
             VALUES (?, ?, ?, ?, ?, ?, 0)
         ]], { owner, request.kind, label, request.image, request.thumbnail, json.encode(transform) })
-        if not id then return fail('Could not reserve library storage') end
-        if not config.PurchaseEnabled then
-            -- Free beta-testing draft. It cannot be worn or published as a paid tattoo.
-            return { ok = true, id = id, price = 0, renderStatus = 'draft' }
-        end
-        if playerId(src) ~= owner then
-            MySQL.update.await('DELETE FROM dtgrid_custom_tattoos WHERE id = ? AND paid = 0', { id })
-            return fail('Character changed during the transaction')
-        end
-        if not Framework.RemoveMoney(src, config.MoneyType or 'cash', price) then
-            MySQL.update.await('DELETE FROM dtgrid_custom_tattoos WHERE id = ? AND paid = 0', { id })
-            return fail('Payment rejected: balance unchanged')
-        end
-        debited = true
-        local updateOk, changed = pcall(MySQL.update.await,
-            'UPDATE dtgrid_custom_tattoos SET paid = 1 WHERE id = ? AND citizenid = ? AND paid = 0',
-            { id, owner }
-        )
-        if not updateOk or not changed or changed < 1 then
-            refunded = refund(src, price)
-            if not refunded then
-                print(('[DT GRID APPEARANCE] REFUND REQUIRED: char=%s tattoo=%s amount=%d')
-                    :format(owner, id, price))
-            end
-            return fail('Could not finish purchase; check transaction log')
-        end
-        return { ok = true, id = id, price = price, renderStatus = 'pending' }
+
+        if not id then return fail('Could not save tattoo draft') end
+        return { ok = true, id = id, price = 0, renderStatus = 'pending' }
     end)
     purchases[owner] = nil
+
     if not ok then
-        if debited and not refunded and not refund(src, config.Price or 300) then
-            print(('[DT GRID APPEARANCE] REFUND REQUIRED after exception: char=%s amount=%s')
-                :format(owner, config.Price or 300))
-        end
-        print(('[DT GRID APPEARANCE] Tattoo purchase failed: %s'):format(response))
-        return fail('Tattoo purchase failed; ask staff to check transaction status')
+        print(('[DT GRID APPEARANCE] Tattoo save error: %s'):format(response))
+        return fail('Tattoo draft could not be saved')
     end
     if response.ok then lastPurchase[owner] = now end
     return response
 end)
 
--- The tattoo can only be applied after its custom .ytd/.xml overlay is registered,
--- tested and linked in the database by the server owner.
+local function streamedCollectionReady(collection)
+    local config = settings()
+    local resources = config.StreamedCollections or {}
+    local resource = type(collection) == 'string' and resources[collection] or nil
+    return type(resource) == 'string'
+        and resource ~= ''
+        and GetResourceState(resource) == 'started'
+end
+
+-- Optional delayed payment for existing drafts, only AFTER a real GTA overlay
+-- has been built, installed, and approved by the server administrator.
+lib.callback.register('dtgrid:tattoos:activate', function(src, tattooId)
+    local config = settings()
+    if not config.PurchaseEnabled then return fail('Tattoo purchases are not enabled') end
+    if not tableReady then return fail('Tattoo storage unavailable') end
+    if not nearShop(src) then return fail('Visit the Tattoo Studio to buy this design') end
+
+    local owner = playerId(src)
+    local id = tonumber(tattooId)
+    if not owner or not id or id < 1 or id % 1 ~= 0 then return fail('Invalid tattoo') end
+    if purchases[owner] then return fail('Previous request still processing') end
+
+    purchases[owner] = true
+    local charged = false
+    local refunded = false
+    local price = config.Price or 300
+
+    local ok, response = pcall(function()
+        local row = MySQL.single.await([[
+            SELECT paid, render_status, collection FROM dtgrid_custom_tattoos
+            WHERE id = ? AND citizenid = ? LIMIT 1
+        ]], { id, owner })
+
+        if not row then return fail('Tattoo not found in your library') end
+        if row.paid == 1 or row.paid == true then
+            return { ok = true, id = id, price = 0, alreadyOwned = true }
+        end
+        if row.render_status ~= 'ready' or not streamedCollectionReady(row.collection) then
+            return fail('Tattoo has not been installed and approved')
+        end
+        if playerId(src) ~= owner then return fail('Character changed during purchase') end
+        if not Framework.HasMoney(src, config.MoneyType or 'cash', price) then
+            return fail(('Insufficient balance: %d %s required'):format(price, config.Currency or 'DTC'))
+        end
+        if not Framework.RemoveMoney(src, config.MoneyType or 'cash', price) then
+            return fail('Could not deduct funds')
+        end
+
+        charged = true
+        local updated = MySQL.update.await([[
+            UPDATE dtgrid_custom_tattoos SET paid = 1
+            WHERE id = ? AND citizenid = ? AND paid = 0 AND render_status = 'ready'
+        ]], { id, owner })
+
+        if not updated or updated ~= 1 then
+            refunded = refund(src, price)
+            return fail('Purchase could not be finalized; ask an administrator to check your funds')
+        end
+
+        return { ok = true, id = id, price = price }
+    end)
+
+    purchases[owner] = nil
+    if not ok then
+        print(('[DT GRID APPEARANCE] Tattoo purchase exception: %s'):format(response))
+        response = fail('Tattoo purchase failed; contact staff')
+    end
+    if charged and (not ok or not response.ok) and not refunded then
+        refunded = refund(src, price)
+    end
+    if charged and (not ok or not response.ok) and not refunded then
+        print(('[DT GRID APPEARANCE] MANUAL REFUND REQUIRED for tattoo #%d: %d DTC'):format(id, price))
+    end
+    return response
+end)
+
+-- Only return overlays from explicitly registered, running resources.
 lib.callback.register('dtgrid:tattoos:getReady', function(src, tattooId)
     local owner = playerId(src)
     local id = tonumber(tattooId)
-    if not owner or not id then return fail('Invalid tattoo') end
+    if not owner or not id or id < 1 or id % 1 ~= 0 then return fail('Invalid tattoo') end
+
     local tattoo = MySQL.single.await([[
-        SELECT id, label, transform_json, collection, hash_male, hash_female
+        SELECT id, label, transform_json, collection, hash_male, hash_female, paid
         FROM dtgrid_custom_tattoos
-        WHERE id = ? AND citizenid = ? AND paid = 1 AND render_status = 'ready'
+        WHERE id = ? AND citizenid = ? AND render_status = 'ready'
     ]], { id, owner })
+
     if not tattoo or not tattoo.collection or not tattoo.hash_male or not tattoo.hash_female then
         return fail('This tattoo is awaiting its streamed overlay')
     end
+    if not streamedCollectionReady(tattoo.collection) then
+        return fail('Tattoo pack is not running or not allowlisted')
+    end
+    if settings().PurchaseEnabled and tattoo.paid ~= 1 and tattoo.paid ~= true then
+        return fail('You must purchase this tattoo before wearing it')
+    end
+
     local transform = json.decode(tattoo.transform_json or '{}') or {}
     return {
         ok = true,
