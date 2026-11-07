@@ -5,6 +5,9 @@ Config.CustomTattoo = {
     -- SAFETY: keep this false until a tested multiplayer ped-rendering pipeline exists.
     -- Once true, Save to Library charges exactly 300 cash/DTC for one new design.
     PurchaseEnabled = false,
+    -- Only explicitly installed GTA decoration collections can be approved for wearing.
+    -- Example: ['dtgrid_custom_overlays'] = 'dtgrid_custom_tattoo_pack'
+    StreamedCollections = {},
     Price = 300,
     MoneyType = 'cash',
     Currency = 'DTC',
