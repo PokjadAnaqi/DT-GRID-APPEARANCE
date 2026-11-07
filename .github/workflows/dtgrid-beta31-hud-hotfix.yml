@@ -1,0 +1,180 @@
+name: DT GRID APPEARANCE Beta 3.1 HUD and Clothing Hotfix
+
+on:
+  push:
+    branches:
+      - beta3-api69-hud-clothing-quest-fix
+    paths:
+      - '.github/workflows/dtgrid-beta31-hud-hotfix.yml'
+      - 'game/customization.lua'
+      - 'game/nui.lua'
+      - 'client/client.lua'
+      - 'fxmanifest.lua'
+      - 'web/src/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  beta31:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Beta 3.1
+        uses: actions/checkout@v4
+        with:
+          ref: beta3-api69-hud-clothing-quest-fix
+          persist-credentials: true
+
+      - name: Validate Lua and preserved features
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.4
+          for path in game/customization.lua game/nui.lua client/client.lua fxmanifest.lua; do
+            luac5.4 -p "$path"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          customization = Path('game/customization.lua').read_text()
+          nui = Path('game/nui.lua').read_text()
+          client = Path('client/client.lua').read_text()
+          manifest = Path('fxmanifest.lua').read_text()
+          checks = [
+              ('DTlib suspension', "UISuspend('appearance')" in customization),
+              ('DTlib resume', "UIResume(token)" in customization),
+              ('Survival HUD export', "'DT_survival_hud', 'hudVisibility'" in customization),
+              ('Quest tracker compatibility', "'DT_questsystem:client:setTrackerSuppressed'" in customization),
+              ('HUD hide on open', 'setAppearanceHudVisible(false)' in customization),
+              ('HUD restore on close & stop', customization.count('setAppearanceHudVisible(true)') == 2),
+              ('Only clothing animations on clothing sessions',
+               "session.components == true or session.props == true" in nui),
+              ('Inventory source whitelist', "source ~= 'shop' and source ~= 'admin' and source ~= 'character'" in client),
+              ('Admin menu source', "isPedMenu and 'admin' or 'shop'" in client),
+              ('Version hotfix', 'version "1.0.0-beta.3.1"' in manifest),
+              ('DTlib Beta 6 metadata', 'dtlib_integration "1.4.0-beta.6"' in manifest),
+              ('API69 theme', Path('web/src/styles/api69.css').exists()),
+              ('No cancelled tattoo studio', not Path('web/src/components/sections/CustomTattooStudio.vue').exists()),
+              ('No cancelled tattoo runtime', not Path('server/dt_custom_tattoos.lua').exists()),
+          ]
+          for label, good in checks:
+              print(('PASS' if good else 'FAIL') + ': ' + label)
+          assert all(good for _, good in checks)
+          PY
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build Vue production NUI
+        working-directory: web
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Verify UI assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web/dist/index.html
+          test -n "$(find web/dist/assets -maxdepth 1 -name '*.js' -size +0c -print -quit)"
+          test -n "$(find web/dist/assets -maxdepth 1 -name '*.css' -size +0c -print -quit)"
+          grep -R -q 'Space Grotesk' web/dist/assets/*.css
+
+      - name: Commit compiled NUI if modified
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -u web/dist
+          git add -f web/dist/index.html web/dist/assets/
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: compile API69 Beta 3.1 HUD hotfix NUI'
+            git push origin HEAD:beta3-api69-hud-clothing-quest-fix
+          fi
+
+      - name: Package full FiveM resource
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+
+          target = Path('release/DT_GRID_APPEARANCE_v1.0.0-beta.3.1_API69_HUD_INVENTORY_FIX_FULL.zip')
+          excluded = {'.git', '.github', 'node_modules', 'release', '__pycache__'}
+          with ZipFile(target, 'w', ZIP_DEFLATED, compresslevel=9) as z:
+              for path in sorted(Path('.').rglob('*')):
+                  if not path.is_file() or any(part in excluded for part in path.parts):
+                      continue
+                  z.write(path, 'illenium-appearance/' + path.as_posix())
+          with ZipFile(target) as z:
+              assert z.testzip() is None
+              entries = set(z.namelist())
+              required = {
+                  'illenium-appearance/fxmanifest.lua',
+                  'illenium-appearance/client/client.lua',
+                  'illenium-appearance/game/customization.lua',
+                  'illenium-appearance/game/nui.lua',
+                  'illenium-appearance/web/dist/index.html',
+                  'illenium-appearance/shared/theme.lua',
+              }
+              assert required <= entries
+              assert not any('CustomTattooStudio' in x or 'dt_custom_tattoos' in x for x in entries)
+          print('Verified ZIP:', target, target.stat().st_size)
+          PY
+
+      - name: Upload full ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DT_GRID_APPEARANCE_BETA31_API69_FULL
+          path: release/*.zip
+
+      - name: Publish Beta 3.1 pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/notes.md" <<'NOTES'
+          # DT GRID APPEARANCE v1.0.0-beta.3.1 — API69 HUD and Clothing Fix
+
+          Full resource, based on **Beta 3 API69** (which itself is based on Beta 2).
+
+          ## Fixes
+
+          - Uses DTlib 1.4.0-beta.6 UI suspension token to temporarily hide
+            supported HUDs, DT Temperature, DT Radiation and DT Quest Tracker
+            while an appearance NUI is open. UI restores on Save, Cancel, and resource stop.
+          - DT_survival_hud is hidden via its own hudVisibility(show) export.
+          - Fallback supports temporary Quest Tracker suppression events when DTlib
+            is unavailable (requires DT_questsystem to implement the relevant event/export).
+          - Prevents barber, tattoo and surgeon Save from running clothing application
+            animations that can trigger unwanted inventory clothing item creation.
+          - Restricts physical clothing item synchronization to Clothing Store,
+            authorized admin clothing menu, and existing first-character starter flow.
+          - Saved outfit application no longer calls the clothing purchase sync path.
+          - Keeps GTA native tattoo catalog, Appearance Save, clothing persistence
+            and the API69 theme intact. Custom PNG tattoo studio remains cancelled.
+
+          ## Deployment
+
+          Keep folder name `illenium-appearance`.
+          Start DTlib (recommended v1.4.0-beta.6) before this resource.
+          No new SQL or item configuration is required.
+          Back up resource/config before installing.
+          Automatic build and Lua syntax checks passed; in-game multiplayer verification
+          is still necessary. Quest tracker suppression requires a compatible
+          DT_questsystem export/event; otherwise it is not guaranteed to hide.
+          NOTES
+          gh release create v1.0.0-beta.3.1 release/*.zip \
+            --target "$(git rev-parse HEAD)" \
+            --prerelease \
+            --title "DT GRID APPEARANCE v1.0.0-beta.3.1 — API69 HUD & Inventory Fix" \
+            --notes-file "$RUNNER_TEMP/notes.md"
