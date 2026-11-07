@@ -182,3 +182,20 @@ Config.UI.CustomThemes = {
 for k, v in pairs(Config.UI.CustomThemes) do
     Config.UI.Themes[k] = v
 end
+
+
+-- API69 global appearance theme; includes creator, shops and wardrobe.
+for _, theme in pairs(Config.UI.Themes or {}) do
+    theme.accent = '#bf9759'
+    theme.accentRgb = '191, 151, 89'
+    theme.fontSans = 'Space Grotesk'
+    theme.fontDisplay = 'Space Grotesk'
+    theme.panelBaseHex = '#101413'
+    theme.panelOpacity = 0.83
+    theme.panelBlur = 18
+    theme.roundedPanel = '0.55rem'
+    theme.roundedCard = '0.45rem'
+    theme.textPrimary = '#f1f2ef'
+    theme.textSecondary = '#d2d4cf'
+    theme.textMuted = '#a1a8a1'
+end

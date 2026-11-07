@@ -102,9 +102,27 @@ lib.callback.register("illenium-appearance:server:hasMoney", function(source, sh
     end
 end)
 
+-- Only price tattoos registered in the server's GTA tattoo catalog.
+local function getServerTattooPrice(tattoo)
+    if type(tattoo) ~= 'table' then return nil end
+    for _, entries in pairs(Config.Tattoos or {}) do
+        for _, item in ipairs(entries) do
+            if item.collection == tattoo.collection
+                and item.hashMale == tattoo.hashMale
+                and item.hashFemale == tattoo.hashFemale then
+                local configuredPrice = tonumber(item.cost) or Config.TattooCost
+                if configuredPrice < 0 then return nil end
+                return configuredPrice
+            end
+        end
+    end
+    return nil
+end
+
 lib.callback.register("illenium-appearance:server:payForTattoo", function(source, tattoo)
     local src = source
-    local cost = tattoo.cost or Config.TattooCost
+    local cost = getServerTattooPrice(tattoo)
+    if not cost then return false end
 
     if Framework.RemoveMoney(src, "cash", cost) then
         lib.notify(src, {

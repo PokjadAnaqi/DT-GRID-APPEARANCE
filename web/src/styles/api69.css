@@ -1,0 +1,83 @@
+/* DT GRID APPEARANCE / API69: Industrial charcoal, transparent panels, readable text. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root,
+.theme-creator,
+.theme-ponsonbys,
+.theme-binco,
+.theme-suburban,
+.theme-barber,
+.theme-tattoo,
+.theme-surgeon,
+.theme-clothingroom,
+.theme-playeroutfitroom {
+  --theme-font-sans: 'Space Grotesk', sans-serif !important;
+  --theme-font-display: 'Space Grotesk', sans-serif !important;
+  --theme-accent: #bf9759 !important;
+  --theme-accent-rgb: 191, 151, 89 !important;
+  --theme-accent-hover: #dbb57e !important;
+  --theme-accent-border: rgba(191, 151, 89, .38) !important;
+  --theme-accent-bg: rgba(191, 151, 89, .12) !important;
+  --theme-bg-base: #101211 !important;
+  --theme-bg-panel: rgba(15, 19, 19, .83) !important;
+  --theme-bg-card: rgba(34, 39, 39, .54) !important;
+  --theme-bg-card-hover: rgba(44, 50, 49, .68) !important;
+  --theme-bg-card-active: rgba(58, 64, 61, .74) !important;
+  --theme-text-primary: #f1f2ef !important;
+  --theme-text-secondary: #d2d4cf !important;
+  --theme-text-muted: #a1a8a1 !important;
+  --theme-border-base: rgba(197, 204, 190, .13) !important;
+  --theme-border-radius-panel: .55rem !important;
+  --theme-border-radius-card: .45rem !important;
+}
+body,button,input,select,textarea {font-family:'Space Grotesk',sans-serif!important}
+.dt-apocalypse-main-panel {border:1px solid rgba(186,165,125,.24)!important;backdrop-filter:blur(18px)!important}
+.dt-apocalypse-main-panel h1,.dt-apocalypse-main-panel h2 {letter-spacing:.025em!important}
+.api69-tattoo-studio {display:grid;gap:12px;padding:14px 12px 20px;border:1px solid rgba(191,151,89,.19);background:rgba(15,20,20,.52);border-radius:8px;color:#edf1e9;font-size:12px}
+.api69-tattoo-head {display:flex;align-items:center;justify-content:space-between;gap:10px}
+.api69-tattoo-head h2 {font-size:15px;font-weight:700;line-height:1.3;color:#f0f1ed}
+.api69-eyebrow {display:block;font-size:9px;letter-spacing:.15em;color:#bf9759;margin-bottom:4px;font-weight:700}
+.api69-price {white-space:nowrap;font-weight:700;font-size:11px;color:#d4b889;border:1px solid rgba(191,151,89,.35);padding:6px 8px;border-radius:4px}
+.api69-segment {display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:5px}
+.api69-segment button {min-height:31px;color:#a7aba5;font-size:11px;font-weight:650;border-radius:3px;transition:background .16s,color .16s}
+.api69-segment button:hover {color:#fff;background:rgba(255,255,255,.065)}
+.api69-segment button.selected {color:#f6ebd6;background:rgba(191,151,89,.2);border:1px solid rgba(191,151,89,.3)}
+.api69-editor {display:grid;gap:10px;min-width:0}
+.api69-field-label,.api69-grid-two label,.api69-slider {font-size:10px;letter-spacing:.045em;font-weight:650;color:#bfc6bb}
+.api69-field-label {display:block;margin-bottom:-4px}
+.api69-input {min-width:0;width:100%;height:34px;padding:6px 9px;color:#e5e8e2;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.13);border-radius:4px;outline:none;font-size:11px}
+.api69-input:focus {border-color:rgba(191,151,89,.62)}
+.api69-grid-two {display:grid;grid-template-columns:1.5fr 1fr;gap:8px}
+.api69-grid-two label {display:grid;gap:6px}
+.api69-color {height:34px;padding:3px}
+.api69-inline {display:flex;gap:6px;min-width:0}
+.api69-inline .api69-input {flex:1}
+.api69-hidden-file {display:none}
+.api69-action-muted {background:rgba(191,151,89,.12);border:1px solid rgba(191,151,89,.27);color:#e1cba8;border-radius:4px;padding:7px 11px;font-weight:650;font-size:11px}
+.api69-action-muted:hover {background:rgba(191,151,89,.2)}
+.api69-preview {display:grid;justify-items:center;gap:7px;padding:11px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.012) 0 9px,rgba(255,255,255,.025) 9px 10px),#151b1b;border:1px dashed rgba(191,151,89,.25);border-radius:4px}
+.api69-preview-body {position:relative;overflow:hidden;height:190px;aspect-ratio:.78;background:radial-gradient(ellipse at 50% 33%,#727772 0%,#444d4a 38%,#202827 75%);clip-path:polygon(30% 0%,70% 0%,93% 28%,80% 100%,20% 100%,7% 28%)}
+.api69-preview-ink {position:absolute;aspect-ratio:1;transform-origin:center;z-index:2;pointer-events:none}
+.api69-preview-ink img {display:block;width:100%;height:100%;object-fit:contain}
+.api69-preview-placeholder {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;letter-spacing:.12em;color:#aaa;white-space:nowrap}
+.api69-preview small {font-size:10px;color:#b5b6b1;text-align:center}
+.api69-editor-sliders {display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.api69-slider {display:grid;gap:5px}
+.api69-slider span {float:right;justify-self:end;font-size:10px;color:#e4ccaa}
+.api69-slider input {width:100%;accent-color:#bf9759;cursor:pointer}
+.api69-action-primary {background:#ac854e;color:#11150f;border-radius:4px;padding:12px 10px;font-size:11px;font-weight:800;letter-spacing:.04em}
+.api69-action-primary:hover:not(:disabled) {background:#d6ad73}
+.api69-action-primary:disabled {opacity:.4;cursor:not-allowed}
+.api69-caution {font-size:10px;line-height:1.5;color:#e4b773}
+.api69-library {display:grid;gap:8px}
+.api69-library-count {font-size:10px;color:#bca57b;letter-spacing:.1em}
+.api69-empty {color:#b1b6ad;text-align:center;padding:24px 0;font-size:11px}
+.api69-library-row {display:flex;gap:9px;align-items:center;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);padding:7px;border-radius:4px}
+.api69-library-row img {width:49px;height:49px;object-fit:contain;background:#424842;border-radius:3px}
+.api69-library-details {display:grid;gap:2px;flex:1;min-width:0}
+.api69-library-details strong {font-size:11px;color:#f2f2f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.api69-library-details small {font-size:9px;color:#aeb5ac}
+.api69-library-row button {font-size:11px;font-weight:700;padding:7px;border:1px solid rgba(191,151,89,.32);border-radius:4px;color:#e4c69a}
+.api69-library-row button:disabled {opacity:.33;cursor:not-allowed}
+.api69-error,.api69-success {font-size:11px;line-height:1.4;border-radius:4px;padding:9px 10px}
+.api69-error {background:rgba(180,61,61,.14);color:#f0b3ad;border:1px solid rgba(210,77,77,.28)}
+.api69-success {background:rgba(66,126,85,.15);color:#b8dec5;border:1px solid rgba(66,126,85,.28)}

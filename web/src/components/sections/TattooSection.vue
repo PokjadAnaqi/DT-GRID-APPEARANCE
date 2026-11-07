@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAppearanceStore } from '@/stores/appearance'
+import CustomTattooStudio from './CustomTattooStudio.vue'
 import { computed, ref, watch } from 'vue'
 import RangeSlider from '@/components/shared/RangeSlider.vue'
 import type { TattooItem, TattooZone } from '@/types'
@@ -134,6 +135,7 @@ function fmtPrice(n: number) {
 
 <template>
   <div class="space-y-4">
+    <CustomTattooStudio />
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-2">

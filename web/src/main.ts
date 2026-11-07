@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import './styles/themes.css'
 import './styles/main.css'
+import './styles/api69.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {

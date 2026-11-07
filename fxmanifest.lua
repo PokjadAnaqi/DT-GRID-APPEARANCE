@@ -4,13 +4,13 @@ game "gta5"
 author "snakewiz & iLLeniumStudios"
 description "DT GRID APPEARANCE - Delta Horizon customization and clothing integration."
 repository "https://github.com/PokjadAnaqi/DT-GRID-APPEARANCE"
-version "1.0.0-beta.2"
+version "1.0.0-beta.3"
 upstream_version "v5.7.0"
 dt_grid_integration "1.0.5.112"
-dtlib_integration "1.4.0-beta.4"
+dtlib_integration "1.4.0-beta.6"
 deltasec_integration "1.5.1-beta.3"
 lation_ui_integration "1.0.0"
-dt_apocalypse_ui "1.0.5"
+dt_apocalypse_ui "API69-beta.3"
 dt_creator_save_ui "1.0.5"
 
 provide 'illenium-appearance'
@@ -49,6 +49,7 @@ client_scripts {
   "client/blips.lua",
   "client/props.lua",
   "client/client.lua",
+  "client/dt_custom_tattoos.lua",
 }
 
 server_scripts {
@@ -70,11 +71,13 @@ server_scripts {
   "server/framework/ox/main.lua",
   "server/util.lua",
   "server/server.lua",
+  "server/dt_custom_tattoos.lua",
   "server/permissions.lua"
 }
 
 shared_scripts {
   "shared/config.lua",
+  "shared/custom_tattoos.lua",
   "shared/blacklist.lua",
   "shared/peds.lua",
   "shared/tattoos.lua",
