@@ -72,6 +72,7 @@ server_scripts {
   "server/util.lua",
   "server/server.lua",
   "server/dt_custom_tattoos.lua",
+  "server/dt_tattoo_pack_bridge.lua",
   "server/permissions.lua"
 }
 
