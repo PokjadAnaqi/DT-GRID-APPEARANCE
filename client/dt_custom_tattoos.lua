@@ -13,6 +13,12 @@ RegisterNUICallback('dtgrid_tattoos_purchase', function(data, callback)
     callback(result or { ok = false, reason = 'Request timed out' })
 end)
 
+RegisterNUICallback('dtgrid_tattoos_activate', function(data, callback)
+    local id = type(data) == 'table' and data.id or nil
+    local result = lib.callback.await('dtgrid:tattoos:activate', false, id)
+    callback(result or { ok = false, reason = 'Purchase request timed out' })
+end)
+
 RegisterNUICallback('dtgrid_tattoos_ready', function(data, callback)
     local id = type(data) == 'table' and data.id or nil
     local result = lib.callback.await('dtgrid:tattoos:getReady', false, id)
