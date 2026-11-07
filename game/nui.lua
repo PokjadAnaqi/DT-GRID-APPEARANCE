@@ -199,9 +199,16 @@ RegisterNUICallback("appearance_save", function(appearance, cb)
     if not appearance.props or #appearance.props == 0 then
         appearance.props = client.getPedProps(cache.ped)
     end
-    client.wearClothes(appearance, "head")
-    client.wearClothes(appearance, "body")
-    client.wearClothes(appearance, "bottom")
+    -- Barber, tattoo and surgeon sessions are appearance-only.
+    -- Applying clothing animations here emits component/prop changes that
+    -- inventory can interpret as new clothing, even when no clothing was purchased.
+    local session = client.getConfig() or {}
+    if session.components == true or session.props == true then
+        client.wearClothes(appearance, "head")
+        client.wearClothes(appearance, "body")
+        client.wearClothes(appearance, "bottom")
+    end
+
     client.exitPlayerCustomization(appearance)
 end)
 
