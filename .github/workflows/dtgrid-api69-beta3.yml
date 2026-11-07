@@ -1,0 +1,186 @@
+name: DT GRID APPEARANCE Beta 3 API69 Theme Only
+
+on:
+  push:
+    branches:
+      - beta3-api69-theme-from-beta2
+    paths:
+      - '.github/workflows/dtgrid-api69-beta3.yml'
+      - 'fxmanifest.lua'
+      - 'shared/theme.lua'
+      - 'web/src/main.ts'
+      - 'web/src/styles/api69.css'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Beta 2-derived branch
+        uses: actions/checkout@v4
+        with:
+          ref: beta3-api69-theme-from-beta2
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Check Beta 2 baseline and theme-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=fc865210e3e5aa1216ed53a6a7b332f96a5ec07d
+          git merge-base --is-ancestor "$BASE" HEAD
+          python3 - <<'PY'
+          import subprocess
+          baseline = 'fc865210e3e5aa1216ed53a6a7b332f96a5ec07d'
+          names = subprocess.check_output(['git','diff','--name-only',baseline,'HEAD'],text=True).splitlines()
+          allowed = {
+              'fxmanifest.lua',
+              'shared/theme.lua',
+              'web/src/main.ts',
+              'web/src/styles/api69.css',
+              '.github/workflows/dtgrid-api69-beta3.yml',
+          }
+          unexpected = sorted(set(names)-allowed)
+          if unexpected:
+              raise SystemExit('Beta 2 baseline scope violation: '+', '.join(unexpected))
+          print('Theme-only changed paths:', names)
+          PY
+          test ! -e web/src/components/sections/CustomTattooStudio.vue
+          test ! -e client/dt_custom_tattoos.lua
+          test ! -e server/dt_custom_tattoos.lua
+          test ! -e shared/custom_tattoos.lua
+          test ! -e server/dt_tattoo_pack_bridge.lua
+          test ! -e sql/custom_tattoos.sql
+          grep -q 'version "1.0.0-beta.3"' fxmanifest.lua
+          grep -q 'dtlib_integration "1.4.0-beta.6"' fxmanifest.lua
+          grep -q 'dt_apocalypse_ui "API69"' fxmanifest.lua
+          grep -q 'Space Grotesk' shared/theme.lua
+          grep -q "styles/api69.css" web/src/main.ts
+          grep -q "TattooSection from" web/src/App.vue
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Compile production NUI
+        working-directory: web
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Verify compiled NUI and no custom tattoo code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web/dist/index.html
+          test -n "$(find web/dist/assets -maxdepth 1 -name '*.js' -size +0c -print -quit)"
+          test -n "$(find web/dist/assets -maxdepth 1 -name '*.css' -size +0c -print -quit)"
+          if grep -R -q -E 'dtgrid_tattoos_purchase|CustomTattooStudio' web/src; then
+            echo 'Rejected: custom tattoo logic detected in Beta 3'
+            exit 1
+          fi
+          if ! grep -R -q 'Space Grotesk' web/dist/assets/*.css; then
+            echo 'Rejected: API69 font missing from compiled CSS'
+            exit 1
+          fi
+
+      - name: Commit compiled NUI to Beta 3 branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -u web/dist
+          git add -f web/dist/index.html web/dist/assets/
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: compile API69 appearance theme Beta 3'
+            git push origin HEAD:beta3-api69-theme-from-beta2
+          fi
+
+      - name: Package complete FiveM resource
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          filename = Path('release/DT_GRID_APPEARANCE_v1.0.0-beta.3_API69_FULL.zip')
+          excluded = {'.git','.github','node_modules','release','__pycache__'}
+          with zipfile.ZipFile(filename,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as bundle:
+              for file in sorted(Path('.').rglob('*')):
+                  if not file.is_file():
+                      continue
+                  if any(part in excluded for part in file.parts):
+                      continue
+                  bundle.write(file,'illenium-appearance/'+file.as_posix())
+
+          with zipfile.ZipFile(filename) as bundle:
+              assert bundle.testzip() is None, 'Corrupted archive'
+              files = set(bundle.namelist())
+              required = {
+                  'illenium-appearance/fxmanifest.lua',
+                  'illenium-appearance/shared/theme.lua',
+                  'illenium-appearance/web/dist/index.html',
+                  'illenium-appearance/web/src/styles/api69.css',
+                  'illenium-appearance/web/src/components/sections/TattooSection.vue',
+              }
+              assert required <= files, 'Missing runtime files'
+              assert not any('CustomTattooStudio' in item or 'dt_custom_tattoos' in item
+                             for item in files), 'Found cancelled tattoo modules'
+          print('Verified full resource:',filename,filename.stat().st_size)
+          PY
+
+      - name: Upload release ZIP for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: DT_GRID_APPEARANCE_API69_BETA3_FULL
+          path: release/*.zip
+
+      - name: Repoint retained Beta 3 tag and publish new prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse HEAD)"
+          echo "Release target: $SHA"
+          TAG="v1.0.0-beta.3"
+          # An obsolete Beta 3 tag remained after its earlier release was deleted.
+          # Update exactly this tag, so this release cannot point to cancelled tattoo code.
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" -f sha="$SHA" -F force=true >/dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/$TAG" -f sha="$SHA" >/dev/null
+          fi
+          cat > "$RUNNER_TEMP/notes.md" <<'NOTES'
+          ## DT GRID APPEARANCE v1.0.0-beta.3 — API69 Theme
+
+          **FULL RESOURCE: built directly from v1.0.0-beta.2 source.**
+
+          - Unified API69 / Apocalypse Industrial theme for creator, clothing shops, barber, tattoo catalog, surgery and wardrobe.
+          - Space Grotesk font, dark transparent panels, compact gold accent, cleaner headers, input fields, sliders, tabs and modals.
+          - Unchanged Beta 2 character appearance, GTA native tattoos, clothing-as-items, database, events, exports, logic and persistence.
+          - Manifest metadata synced to DTlib v1.4.0-beta.6. No DTlib bridge behavior changed.
+
+          **Cancelled features are NOT included:** custom tattoo image/URL/text editor, tattoo library, runtime texture bridge and custom tattoo payment.
+
+          Resource directory must remain `illenium-appearance`.
+          Back up your current resource and configuration before replacing. No new SQL is required.
+          Automated checks: TypeScript/Vue production compilation and full ZIP structure verification.
+          Live FiveM player testing is still recommended.
+
+          This Beta 3 tag replaces the obsolete deleted Beta 3 tattoo prototype tag.
+          NOTES
+          gh release create "$TAG" release/*.zip \
+            --target "$SHA" \
+            --prerelease \
+            --title "DT GRID APPEARANCE v1.0.0-beta.3 — API69 Theme Only" \
+            --notes-file "$RUNNER_TEMP/notes.md"
