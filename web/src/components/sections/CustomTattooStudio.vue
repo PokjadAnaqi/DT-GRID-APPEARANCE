@@ -231,11 +231,6 @@ async function saveTattoo() {
     error.value = 'Add an image or text before saving.'
     return
   }
-  if (purchaseEnabled.value && !confirmPurchase.value) {
-    confirmPurchase.value = true
-    message.value = `Press Save again to confirm the ${price.value} DTC charge.`
-    return
-  }
   confirmPurchase.value = false
   saving.value = true
   try {
@@ -256,15 +251,33 @@ async function saveTattoo() {
 async function applySaved(item: SavedTattoo) {
   resetAlerts()
   if (item.renderStatus !== 'ready') {
-    error.value = 'This design needs a streamed ped overlay before it can be worn.'
+    error.value = 'This tattoo needs a streamed ped overlay before it can be worn.'
     return
   }
+
   try {
+    // Free internal testing is allowed for approved overlays while purchases are disabled.
+    // Live payments happen only after the admin has installed and approved the GTA asset.
+    if (purchaseEnabled.value && !item.paid) {
+      if (confirmActivationId.value !== item.id) {
+        confirmActivationId.value = item.id
+        message.value = `Press Buy & Use again to confirm ${price.value} DTC for this tattoo.`
+        return
+      }
+      const payment = await fetchNui<PurchaseResponse>('dtgrid_tattoos_activate', { id: item.id })
+      if (!payment?.ok) throw new Error(payment?.reason || 'Tattoo payment rejected')
+      item.paid = true
+      confirmActivationId.value = null
+      await refreshLibrary()
+    }
+
     const response = await fetchNui<ReadyResponse>('dtgrid_tattoos_ready', { id: item.id })
     if (!response?.ok || !response.tattoo) throw new Error(response?.reason || 'Tattoo unavailable')
+
     const newTattoo = response.tattoo
     const original = store.appearance?.tattoos
     if (!original) throw new Error('Character appearance not loaded')
+
     const zone = item.zone
     const all = { ...original } as Record<TattooZone, TattooItem[]>
     const tattoos = [...(all[zone] || [])]
@@ -273,8 +286,10 @@ async function applySaved(item: SavedTattoo) {
     if (!existing) tattoos.push(newTattoo)
     all[zone] = tattoos
     store.updateTattoos(all)
-    message.value = 'Tattoo preview applied. Press the main appearance Save button to persist.'
-  } catch (failure) { error.value = String(failure) }
+    message.value = 'Streamed tattoo applied. Use the main appearance Save button to persist it.'
+  } catch (failure) {
+    error.value = String(failure)
+  }
 }
 
 watch([lettering, () => editor.font, () => editor.fontSize, () => editor.color], renderText)
@@ -365,14 +380,14 @@ onMounted(() => { renderText(); refreshLibrary() })
         </label>
       </div>
       <button class="api69-action-primary" :disabled="saving || loading || !artwork" @click="saveTattoo">
-        {{ saving ? 'Saving…' : confirmPurchase ? `Confirm ${price} DTC` : purchaseEnabled ? `Save to Library — ${price} DTC` : 'Save Test Draft — FREE' }}
+        {{ saving ? 'Saving…' : 'Save Design Draft — FREE' }}
       </button>
-      <p v-if="!purchaseEnabled" class="api69-caution">Beta test mode: drafts are stored without payment and cannot appear on the ped. Paid saving will be enabled after renderer validation.</p>
+      <p v-if="!purchaseEnabled" class="api69-caution">Development mode: saving designs is free. Only designs with installed streamed overlays can be worn. When payments are enabled, approval is required before a 300 DTC purchase.</p>
     </div>
 
     <div v-else class="api69-library">
       <div class="api69-library-count">{{ library.length }} / {{ maxDesigns }} CUSTOM DESIGNS</div>
-      <div v-if="!library.length" class="api69-empty">No purchased tattoo designs yet.</div>
+      <div v-if="!library.length" class="api69-empty">No saved tattoo designs yet.</div>
       <div v-for="item in library" :key="item.id" class="api69-library-row">
         <img :src="item.thumbnail" :alt="item.label" />
         <div class="api69-library-details">
@@ -380,7 +395,7 @@ onMounted(() => { renderText(); refreshLibrary() })
           <small>{{ item.zone.replace('ZONE_', '').replace(/_/g, ' ') }}</small>
           <small>{{ !item.paid ? 'Test draft — unpaid' : item.renderStatus === 'ready' ? 'Streamed overlay ready' : 'Awaiting streamed overlay' }}</small>
         </div>
-        <button :disabled="!item.paid || item.renderStatus !== 'ready'" @click="applySaved(item)">Use</button>
+        <button :disabled="item.renderStatus !== 'ready'" @click="applySaved(item)">{{ item.renderStatus !== 'ready' ? 'Pending' : !item.paid && purchaseEnabled ? (confirmActivationId === item.id ? `Confirm ${price} DTC` : `Buy ${price} DTC`) : 'Use' }}</button>
       </div>
     </div>
 
