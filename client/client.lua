@@ -169,6 +169,16 @@ local function syncDtGridClothing(oldAppearance, newAppearance, options)
 
     local cfg = dtGridInventoryConfig()
     options = type(options) == "table" and options or {}
+
+    -- Only paid clothing shop, authorized admin appearance menu and the
+    -- initial character outfit may generate inventory clothing items.
+    -- Applying saved outfits and visiting barber/tattoo/surgeon never purchases
+    -- extra clothing through appearance synchronization.
+    local source = options.source
+    if source ~= 'shop' and source ~= 'admin' and source ~= 'character' then
+        return true
+    end
+
     if options.notify == nil then options.notify = cfg.notify ~= false end
     if options.reuseOwned == nil then options.reuseOwned = cfg.reuseOwned ~= false end
 
@@ -271,14 +281,7 @@ function OpenShop(config, isPedMenu, shopType)
             return
         end
 
-        if GetResourceState('0r-hud-v3') == 'started' then
-            exports['0r-hud-v3']:ToggleVisible(false)
-        end
-
-        if GetResourceState('DT_temperature') == 'started' then
-            exports['DT_temperature']:ToggleVisible(false)
-        end
-        
+        -- HUD visibility is managed centrally by client.startPlayerCustomization.
         if shopType == "clothing" and dtGridClothingLocked() then
             lib.notify({
                 title = "Clothing Locked",
@@ -292,14 +295,6 @@ function OpenShop(config, isPedMenu, shopType)
         local oldAppearance = shopType == "clothing" and client.getPedAppearance(cache.ped) or nil
 
         client.startPlayerCustomization(function(appearance)
-            if GetResourceState('0r-hud-v3') == 'started' then
-                exports['0r-hud-v3']:ToggleVisible(true)
-            end
-
-            if GetResourceState('DT_temperature') == 'started' then
-                exports['DT_temperature']:ToggleVisible(true)
-            end
-
             if appearance then
                 if not isPedMenu then
                     TriggerServerEvent("illenium-appearance:server:chargeCustomer", shopType)
@@ -308,7 +303,10 @@ function OpenShop(config, isPedMenu, shopType)
                 TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance)
 
                 if shopType == "clothing" then
-                    syncDtGridClothing(oldAppearance, appearance, { source = "shop", retry = 0 })
+                    syncDtGridClothing(oldAppearance, appearance, {
+                        source = isPedMenu and 'admin' or 'shop',
+                        retry = 0
+                    })
                 end
             else
                 lib.notify({
