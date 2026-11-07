@@ -1,27 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Bebas+Neue&family=Outfit:wght@400;700&family=Rajdhani:wght@400;700&family=Roboto:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pirata+One&family=Prata&family=Abril+Fatface&family=Archivo+Black&family=Staatliches&family=Kanit:wght@900&family=Syncopate:wght@400;700&family=Syne:wght@400;800&family=Indie+Flower&family=Metamorphous&display=swap');@import url('https://fonts.googleapis.com/css2?family=Prata&family=Syne:wght@700;800&family=Chakra+Petch:wght@400;600;700&family=Abril+Fatface&family=Pirata+One&family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap&subset=latin-ext');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Bebas+Neue&family=Outfit:wght@400;700&family=Rajdhani:wght@400;700&family=Roboto:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pirata+One&family=Prata&family=Abril+Fatface&family=Archivo+Black&family=Staatliches&family=Kanit:wght@900&family=Syncopate:wght@400;700&family=Syne:wght@400;800&family=Indie+Flower&family=Metamorphous&display=swap');@import url('https://fonts.googleapis.com/css2?family=Prata&family=Syne:wght@700;800&family=Chakra+Petch:wght@400;600;700&family=Abril+Fatface&family=Pirata+One&family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap&subset=latin-ext');@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 /* Tooltip fix: overflow:hidden clips absolute-positioned tooltips in CEF */
-button[data-v-50780671] {
+button[data-v-f090bc86] {
   overflow: visible;
 }
-button > .\-z-10[data-v-50780671] {
+button > .\-z-10[data-v-f090bc86] {
   overflow: hidden;
   border-radius: inherit;
+}
+.dt-sidebar-action[data-v-f090bc86] {
+  width: 3rem !important;
+  height: 3rem !important;
+  min-width: 3rem !important;
+  min-height: 3rem !important;
+  max-width: 3rem !important;
+  max-height: 3rem !important;
+  padding: 0 !important;
+  flex: 0 0 3rem !important;
 }
 
 /* Tooltip fix: overflow:hidden on buttons clips absolute-positioned tooltips in CEF.
    Setting overflow:visible allows the tooltip to render outside the button bounds. */
-button[data-v-058b201b] {
+button[data-v-4de5e974] {
   overflow: visible;
 }
 /* Keep the inner background layer visually clipped inside the rounded card */
-button > .\-z-10[data-v-058b201b] {
+button > .\-z-10[data-v-4de5e974] {
   overflow: hidden;
   border-radius: inherit;
 }
 
 /* CEF GPU compositing fix: keep color layers on their own composited layer
    so Chromium does not re-rasterize them every frame (causes RGBA flicker). */
-.preset-btn[data-v-367afde8] {
+.preset-btn[data-v-e657f320] {
   background-color: transparent;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -29,7 +39,7 @@ button > .\-z-10[data-v-058b201b] {
   contain: layout paint;
   will-change: transform;
 }
-.preset-bg[data-v-367afde8] {
+.preset-bg[data-v-e657f320] {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -38,24 +48,24 @@ button > .\-z-10[data-v-058b201b] {
   transform: translateZ(0);
   will-change: transform;
 }
-.value-badge[data-v-367afde8] {
+.value-badge[data-v-e657f320] {
   background-color: rgba(var(--theme-accent-rgb), 0.1);
   transform: translateZ(0);
   will-change: transform;
 }
-.reset-defaults-btn[data-v-367afde8] {
+.reset-defaults-btn[data-v-e657f320] {
   color: rgba(var(--theme-accent-rgb), 0.6);
   border-color: rgba(var(--theme-accent-rgb), 0.2);
   background-color: rgba(var(--theme-accent-rgb), 0.05);
   transform: translateZ(0);
   will-change: transform;
 }
-.reset-defaults-btn[data-v-367afde8]:hover {
+.reset-defaults-btn[data-v-e657f320]:hover {
   color: rgb(var(--theme-accent-rgb));
   border-color: rgba(var(--theme-accent-rgb), 0.4);
   background-color: rgba(var(--theme-accent-rgb), 0.1);
 }
-input[type='range'][data-v-367afde8]::-webkit-slider-thumb {
+input[type='range'][data-v-e657f320]::-webkit-slider-thumb {
   -webkit-appearance: none;
           appearance: none;
   width: 12px;
@@ -67,49 +77,49 @@ input[type='range'][data-v-367afde8]::-webkit-slider-thumb {
 }
 
 /* GPU compositing fix — prevents icon backgrounds from disappearing/flashing in CEF */
-.outfit-icon-box[data-v-171c535e] {
+.outfit-icon-box[data-v-b8e5225e] {
   background-color: rgba(var(--theme-accent-rgb), 0.1);
   border: 1px solid rgba(var(--theme-accent-rgb), 0.25);
   transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
 }
-.empty-icon-box[data-v-171c535e] {
+.empty-icon-box[data-v-b8e5225e] {
   border: 1px solid rgba(var(--theme-accent-rgb), 0.3);
   background-color: rgba(var(--theme-accent-rgb), 0.05);
   transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
 }
-.outfit-item-icon[data-v-171c535e] {
+.outfit-item-icon[data-v-b8e5225e] {
   background-color: rgba(var(--theme-accent-rgb), 0.1);
   border: 1px solid rgba(var(--theme-accent-rgb), 0.2);
   transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
 }
-.panel-header-border[data-v-171c535e] {
+.panel-header-border[data-v-b8e5225e] {
   border-bottom: 1px solid rgba(var(--theme-accent-rgb), 0.12);
 }
-.save-confirm-btn[data-v-171c535e] {
+.save-confirm-btn[data-v-b8e5225e] {
   border-color: rgba(var(--theme-accent-rgb), 0.4);
   background-color: rgba(var(--theme-accent-rgb), 0.1);
   transform: translateZ(0);
   will-change: transform;
 }
-.cancel-btn[data-v-171c535e] {
+.cancel-btn[data-v-b8e5225e] {
   color: rgba(239, 68, 68, 0.8);
   border-color: rgba(239, 68, 68, 0.3);
   background-color: rgba(239, 68, 68, 0.08);
   transform: translateZ(0);
   will-change: transform;
 }
-.cancel-btn[data-v-171c535e]:hover {
+.cancel-btn[data-v-b8e5225e]:hover {
   color: rgb(239, 68, 68);
   border-color: rgba(239, 68, 68, 0.5);
   background-color: rgba(239, 68, 68, 0.15);
 }
-.outfit-card[data-v-171c535e] {
+.outfit-card[data-v-b8e5225e] {
   position: relative;
   background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
   border: 1px solid rgba(var(--theme-accent-rgb), 0.12);
@@ -118,34 +128,34 @@ input[type='range'][data-v-367afde8]::-webkit-slider-thumb {
   isolation: isolate;
   overflow: hidden;
 }
-.outfit-card[data-v-171c535e]::before {
+.outfit-card[data-v-b8e5225e]::before {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
   pointer-events: none;
 }
-.custom-scrollbar[data-v-171c535e]::-webkit-scrollbar {
+.custom-scrollbar[data-v-b8e5225e]::-webkit-scrollbar {
   width: 4px;
 }
-.custom-scrollbar[data-v-171c535e]::-webkit-scrollbar-track {
+.custom-scrollbar[data-v-b8e5225e]::-webkit-scrollbar-track {
   background: transparent;
 }
-.custom-scrollbar[data-v-171c535e]::-webkit-scrollbar-thumb {
+.custom-scrollbar[data-v-b8e5225e]::-webkit-scrollbar-thumb {
   background: rgba(var(--theme-accent-rgb), 0.1);
   border-radius: 10px;
 }
-.custom-scrollbar[data-v-171c535e]::-webkit-scrollbar-thumb:hover {
+.custom-scrollbar[data-v-b8e5225e]::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--theme-accent-rgb), 0.3);
 }
-.save-outfit-btn[data-v-171c535e]:hover {
+.save-outfit-btn[data-v-b8e5225e]:hover {
   background-image: linear-gradient(to right, rgba(var(--theme-accent-rgb), 0.35), rgba(var(--theme-accent-rgb), 0.15));
   border-color: rgba(var(--theme-accent-rgb), 0.5);
   box-shadow: 0 0 16px rgba(var(--theme-accent-rgb), 0.25), inset 0 0 8px rgba(var(--theme-accent-rgb), 0.1);
   transform: translateY(-1px) scale(1.01);
   color: white;
 }
-.save-outfit-btn[data-v-171c535e]:active {
+.save-outfit-btn[data-v-b8e5225e]:active {
   transform: scale(0.97);
   box-shadow: 0 0 6px rgba(var(--theme-accent-rgb), 0.2), inset 0 0 12px rgba(var(--theme-accent-rgb), 0.15);
 }
@@ -574,6 +584,61 @@ input[data-v-211f7ac3]:-webkit-autofill:active  {
   border-radius: 0.75rem !important;
   border-color: rgba(132, 204, 22, 0.2) !important;
 }
+/* ========================================================================== */
+/* DT GRID / DELTA HORIZON — APOCALYPSE APPEARANCE TERMINAL                  */
+/* ========================================================================== */
+:root,
+.theme-creator,
+.theme-ponsonbys,
+.theme-binco,
+.theme-suburban,
+.theme-barber,
+.theme-tattoo,
+.theme-wardrobe {
+  --theme-font-sans: 'Chakra Petch', 'Rajdhani', Arial, sans-serif !important;
+  --theme-font-display: 'Rajdhani', 'Chakra Petch', Arial, sans-serif !important;
+
+  --theme-bg-base: rgba(4, 6, 7, 0.94) !important;
+  --theme-bg-panel: rgba(7, 9, 10, 0.88) !important;
+  --theme-bg-card: rgba(13, 15, 16, 0.72) !important;
+  --theme-bg-card-hover: rgba(25, 27, 27, 0.84) !important;
+  --theme-bg-card-active: rgba(34, 31, 24, 0.86) !important;
+
+  --theme-text-primary: #e7e9e5 !important;
+  --theme-text-secondary: #b9bdb8 !important;
+  --theme-text-muted: #686d68 !important;
+
+  --theme-accent: #b79b58 !important;
+  --theme-accent-rgb: 183, 155, 88 !important;
+  --theme-accent-hover: #d0b36d !important;
+  --theme-accent-border: rgba(183, 155, 88, 0.42) !important;
+  --theme-accent-bg: rgba(183, 155, 88, 0.10) !important;
+  --theme-border-base: rgba(222, 226, 220, 0.095) !important;
+
+  --theme-border-radius-panel: 2px !important;
+  --theme-border-radius-card: 1px !important;
+}
+/* Shop identity remains visible through restrained status accents only. */
+.theme-ponsonbys { --dt-shop-status: #d8bb74; }
+.theme-binco     { --dt-shop-status: #8f9b73; }
+.theme-suburban  { --dt-shop-status: #8fa5ac; }
+.theme-barber    { --dt-shop-status: #b98b59; }
+.theme-tattoo    { --dt-shop-status: #9f7373; }
+.theme-creator   { --dt-shop-status: #b79b58; }
+.theme-wardrobe  { --dt-shop-status: #89978e; }
+.theme-creator h1,
+.theme-ponsonbys h1,
+.theme-binco h1,
+.theme-suburban h1,
+.theme-barber h1,
+.theme-tattoo h1,
+.theme-wardrobe h1 {
+  font-family: var(--theme-font-display) !important;
+  font-size: 1.7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
 
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
@@ -1482,11 +1547,6 @@ video {
   width: 64px;
 }
 
-.w-fit{
-  width: -moz-fit-content;
-  width: fit-content;
-}
-
 .w-full{
   width: 100%;
 }
@@ -1889,11 +1949,6 @@ video {
   padding-right: 1rem;
 }
 
-.px-6{
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
 .px-7{
   padding-left: 1.75rem;
   padding-right: 1.75rem;
@@ -1997,11 +2052,6 @@ video {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.text-4xl{
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-}
-
 .text-\[10px\]{
   font-size: 10px;
 }
@@ -2091,11 +2141,6 @@ video {
 .text-black{
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1));
-}
-
-.text-emerald-400{
-  --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity, 1));
 }
 
 .text-emerald-500{
@@ -2246,16 +2291,6 @@ video {
 
 .blur{
   --tw-blur: blur(8px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.drop-shadow{
-  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.drop-shadow-2xl{
-  --tw-drop-shadow: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
@@ -2521,6 +2556,375 @@ video {
   transform: translateX(-30px);
 }
 
+/* ========================================================================== */
+
+/* DT GRID INVENTORY-STYLE APOCALYPSE UI                                     */
+
+/* ========================================================================== */
+
+html, body, #app {
+  background: transparent !important;
+}
+
+body {
+  font-family: var(--theme-font-sans), Arial, sans-serif;
+  color: var(--theme-text-primary);
+}
+
+/* Thin survival-terminal scrollbar */
+
+::-webkit-scrollbar { width: 3px !important; height: 3px !important; }
+
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.025) !important; }
+
+::-webkit-scrollbar-thumb {
+  background: rgba(183,155,88,0.46) !important;
+  border-radius: 0 !important;
+}
+
+/* No luxury rounded glass. Every panel becomes a field terminal slab. */
+
+.rounded-theme-panel,
+.rounded-theme-card,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded {
+  border-radius: 1px !important;
+}
+
+.dt-apocalypse-main-panel,
+.dt-apocalypse-sidebar,
+.dt-apocalypse-utility-panel {
+  border-color: rgba(225, 229, 223, 0.10) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.42),
+    inset 0 0 30px rgba(0,0,0,0.24),
+    0 18px 44px rgba(0,0,0,0.34) !important;
+}
+
+.dt-apocalypse-main-panel::before,
+.dt-apocalypse-sidebar::before,
+.dt-apocalypse-utility-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -9;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.010) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 20% 0%, rgba(183,155,88,0.045), transparent 38%);
+  background-size: 28px 28px, 28px 28px, 100% 4px, 100% 100%;
+  opacity: 0.82;
+}
+
+.dt-apocalypse-main-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -8;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 0 56%, rgba(255,255,255,0.018) 56.2%, transparent 56.5%),
+    linear-gradient(180deg, rgba(7,9,10,0.92), rgba(6,8,9,0.82));
+}
+
+/* Frosted canvas is deliberately subdued to match DT GRID transparent panels. */
+
+.dt-apocalypse-main-panel canvas,
+.dt-apocalypse-sidebar canvas,
+.dt-apocalypse-utility-panel canvas {
+  opacity: 0.16 !important;
+  filter: saturate(0.45) contrast(1.06) !important;
+}
+
+/* Main center panel */
+
+.dt-apocalypse-main-panel {
+  width: 430px !important;
+  background: rgba(6,8,9,0.76) !important;
+}
+
+/* Side rails */
+
+.dt-apocalypse-sidebar {
+  width: 64px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  gap: 7px !important;
+  background: rgba(6,8,9,0.76) !important;
+}
+
+.dt-apocalypse-sidebar button,
+.dt-apocalypse-sidebar > div[class*='w-12'] {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 1px !important;
+  background: rgba(10,12,13,0.72) !important;
+  border-color: rgba(222,226,220,0.09) !important;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.18) !important;
+}
+
+.dt-apocalypse-sidebar button:hover {
+  transform: none !important;
+  border-color: rgba(183,155,88,0.52) !important;
+  background: rgba(34,31,24,0.70) !important;
+}
+
+.dt-apocalypse-sidebar button.text-theme-accent,
+.dt-apocalypse-sidebar button[class*='text-theme-accent'] {
+  border-color: rgba(183,155,88,0.65) !important;
+  background: linear-gradient(135deg, rgba(183,155,88,0.13), rgba(8,10,11,0.72)) !important;
+  box-shadow: inset 3px 0 0 rgba(183,155,88,0.82) !important;
+}
+
+/* Tooltips */
+
+.dt-apocalypse-sidebar .group > div[class*='opacity-0'] {
+  border-radius: 1px !important;
+  background: rgba(6,8,9,0.96) !important;
+  border-color: rgba(183,155,88,0.32) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.42) !important;
+}
+
+/* Header */
+
+.dt-apocalypse-header {
+  min-height: 92px;
+  padding: 14px 18px 12px !important;
+  align-items: stretch !important;
+  background:
+    linear-gradient(90deg, rgba(183,155,88,0.08), transparent 70%),
+    rgba(5,7,8,0.62) !important;
+  border-bottom: 1px solid rgba(225,229,223,0.09) !important;
+}
+
+.dt-apocalypse-brandrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.dt-apocalypse-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(222,225,220,0.54);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dt-apocalypse-logo {
+  width: 23px;
+  height: 23px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  opacity: 0.92;
+}
+
+.dt-apocalypse-index {
+  color: #b79b58;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.dt-apocalypse-header-title {
+  width: 100%;
+  color: #e7e9e5 !important;
+  -webkit-text-fill-color: #e7e9e5 !important;
+  background: none !important;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.64) !important;
+  text-align: left !important;
+  line-height: 1 !important;
+}
+
+.dt-apocalypse-header-subtitle {
+  margin-top: 5px;
+  color: rgba(183,155,88,0.58);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Section cards */
+
+.dt-apocalypse-card,
+[class*='bg-theme-card'] {
+  border-radius: 1px !important;
+}
+
+.dt-apocalypse-card {
+  background: rgba(9,11,12,0.68) !important;
+  border-color: rgba(222,226,220,0.08) !important;
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.18) !important;
+}
+
+.dt-apocalypse-card > button {
+  min-height: 43px;
+  padding: 7px 10px !important;
+  border-left: 2px solid rgba(183,155,88,0.26);
+  background: linear-gradient(90deg, rgba(183,155,88,0.045), transparent 60%);
+}
+
+.dt-apocalypse-card h2 {
+  color: rgba(225,228,223,0.72) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.13em !important;
+}
+
+.dt-apocalypse-card button div[class*='w-8'] {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 1px !important;
+  background: rgba(183,155,88,0.055) !important;
+}
+
+/* Steppers and form surfaces */
+
+.theme-aware-stepper,
+input[type='text'],
+input[type='number'],
+select,
+textarea {
+  border-radius: 1px !important;
+  background: rgba(4,6,7,0.62) !important;
+  border: 1px solid rgba(222,226,220,0.08) !important;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.22) !important;
+}
+
+.theme-aware-stepper {
+  border: 1px solid rgba(222,226,220,0.07) !important;
+}
+
+.theme-aware-stepper button {
+  border-radius: 0 !important;
+  border-right: 1px solid rgba(222,226,220,0.055);
+  border-left: 1px solid rgba(222,226,220,0.055);
+}
+
+/* Tactical slider */
+
+.range-slider-track {
+  height: 3px !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+
+.range-slider-fill {
+  border-radius: 0 !important;
+  background: linear-gradient(90deg, #7b6638, #b79b58) !important;
+  box-shadow: none !important;
+}
+
+.range-slider-thumb {
+  width: 8px !important;
+  height: 13px !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(235,225,198,0.78) !important;
+  background: #b79b58 !important;
+  box-shadow: 0 0 8px rgba(183,155,88,0.22) !important;
+}
+
+/* Color swatches */
+
+.theme-aware-swatch {
+  border-radius: 1px !important;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.45) !important;
+}
+
+/* Secondary utility panels */
+
+.dt-apocalypse-utility-panel {
+  background: rgba(6,8,9,0.84) !important;
+  padding: 14px !important;
+  border-radius: 1px !important;
+}
+
+/* Generic buttons: restrained, terminal-like */
+
+button {
+  font-family: var(--theme-font-sans), Arial, sans-serif;
+}
+
+button[class*='bg-theme-accent'],
+.save-outfit-btn {
+  border-radius: 1px !important;
+  background: linear-gradient(90deg, rgba(183,155,88,0.18), rgba(183,155,88,0.06)) !important;
+  border: 1px solid rgba(183,155,88,0.36) !important;
+  color: #d7c18a !important;
+  box-shadow: none !important;
+}
+
+/* Save/exit semantic colors remain readable but subdued */
+
+button[class*='emerald'] { filter: saturate(0.58) brightness(0.92); }
+
+button[class*='red'] { filter: saturate(0.65) brightness(0.92); }
+
+/* Modals */
+
+.dt-apocalypse-modal-backdrop {
+  background: rgba(0,0,0,0.78) !important;
+  backdrop-filter: blur(2px);
+}
+
+.dt-apocalypse-modal {
+  border-radius: 1px !important;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 4px),
+    rgba(7,9,10,0.97) !important;
+  border: 1px solid rgba(222,226,220,0.10) !important;
+  box-shadow: 0 26px 60px rgba(0,0,0,0.72), inset 3px 0 0 rgba(183,155,88,0.46) !important;
+}
+
+/* Keep the UI compact at 1080p while preserving usability */
+
+@media (max-height: 900px) {
+  .dt-apocalypse-main-panel { width: 405px !important; }
+  .dt-apocalypse-header { min-height: 76px; padding: 10px 14px !important; }
+  .dt-apocalypse-sidebar { width: 58px !important; padding-top: 9px !important; padding-bottom: 9px !important; }
+  .dt-apocalypse-sidebar button,
+  .dt-apocalypse-sidebar > div[class*='w-12'] { width: 36px !important; height: 36px !important; }
+}
+
+/* DT GRID creator action bar ------------------------------------------------ */
+
+.dt-creator-actionbar {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 30;
+  border-top: 1px solid rgba(var(--theme-accent-rgb), 0.20);
+  background: linear-gradient(180deg, rgba(6, 8, 9, 0.88), rgba(4, 6, 7, 0.96));
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.22);
+}
+
+.dt-creator-actionbar-inner {
+  min-height: 62px;
+}
+
+.dt-creator-actionbar button {
+  min-height: 42px;
+  border-radius: 1px !important;
+  font-family: var(--theme-font-display, sans-serif);
+  font-size: 12px !important;
+  letter-spacing: 0.12em;
+}
+
+.theme-creator .dt-creator-actionbar button:last-child {
+  color: var(--theme-accent) !important;
+}
+
 .hover\:scale-105:hover{
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -2630,131 +3034,343 @@ video {
   -webkit-appearance: none;
           appearance: none;
 }
-/* ========================================================================== */
-/* DT GRID / DELTA HORIZON — APOCALYPSE RUNTIME OVERRIDES                   */
-/* Runtime-safe CSS patch for the prebuilt Illenium V2 bundle.               */
-/* ========================================================================== */
-:root,.theme-creator,.theme-ponsonbys,.theme-binco,.theme-suburban,.theme-barber,.theme-tattoo,.theme-wardrobe{
- --theme-font-sans:'Chakra Petch','Rajdhani',Arial,sans-serif!important;
- --theme-font-display:'Rajdhani','Chakra Petch',Arial,sans-serif!important;
- --theme-bg-base:rgba(4,6,7,.94)!important;
- --theme-bg-panel:rgba(7,9,10,.88)!important;
- --theme-bg-card:rgba(13,15,16,.72)!important;
- --theme-bg-card-hover:rgba(25,27,27,.84)!important;
- --theme-bg-card-active:rgba(34,31,24,.86)!important;
- --theme-text-primary:#e7e9e5!important;
- --theme-text-secondary:#b9bdb8!important;
- --theme-text-muted:#686d68!important;
- --theme-accent:#b79b58!important;
- --theme-accent-rgb:183,155,88!important;
- --theme-accent-hover:#d0b36d!important;
- --theme-accent-border:rgba(183,155,88,.42)!important;
- --theme-accent-bg:rgba(183,155,88,.10)!important;
- --theme-border-base:rgba(222,226,220,.095)!important;
- --theme-border-radius-panel:2px!important;
- --theme-border-radius-card:1px!important
-}
-html,body,#app{background:transparent!important}
-body{font-family:var(--theme-font-sans),Arial,sans-serif!important;color:var(--theme-text-primary)!important}
-::-webkit-scrollbar{width:3px!important;height:3px!important}
-::-webkit-scrollbar-track{background:rgba(255,255,255,.025)!important}
-::-webkit-scrollbar-thumb{background:rgba(183,155,88,.46)!important;border-radius:0!important}
-.rounded-theme-panel,.rounded-theme-card,.rounded-lg,.rounded-xl,.rounded-2xl,.rounded{border-radius:1px!important}
 
-/* All appearance panels: dark translucent field terminal, thin borders. */
-.rounded-theme-panel{
- position:relative!important;
- border-color:rgba(225,229,223,.10)!important;
- background-color:rgba(6,8,9,.80)!important;
- box-shadow:inset 0 0 0 1px rgba(0,0,0,.42),inset 0 0 28px rgba(0,0,0,.24),0 18px 44px rgba(0,0,0,.34)!important
-}
-.rounded-theme-panel:before{
- content:'';position:absolute;inset:0;z-index:-9;pointer-events:none;
- background:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.011) 1px,transparent 1px),repeating-linear-gradient(0deg,rgba(255,255,255,.008) 0 1px,transparent 1px 4px),radial-gradient(circle at 20% 0,rgba(183,155,88,.04),transparent 38%);
- background-size:28px 28px,28px 28px,100% 4px,100% 100%;opacity:.78
-}
-.rounded-theme-panel canvas{opacity:.16!important;filter:saturate(.42) contrast(1.08)!important}
 
-/* 420px main editor panel */
-.w-\[420px\].rounded-theme-panel{width:430px!important;background:rgba(6,8,9,.76)!important}
-.w-\[420px\].rounded-theme-panel>.bg-theme-panel{background:linear-gradient(180deg,rgba(7,9,10,.90),rgba(6,8,9,.80))!important}
+/*
+ * DT GRID APPEARANCE | Apocalypse Industrial
+ * Visual layer only. Character customization, outfit and tattoo behavior is unchanged.
+ * Do not style the outer NUI viewport with an opaque background.
+ */
 
-/* Main shop header: replaces boutique/luxury feel with tactical terminal hierarchy. */
-.w-\[420px\].rounded-theme-panel>div.px-6.py-5{
- min-height:88px!important;padding:13px 17px 12px!important;align-items:flex-start!important;justify-content:flex-end!important;
- background:linear-gradient(90deg,rgba(183,155,88,.075),transparent 72%),rgba(5,7,8,.62)!important;
- border-bottom:1px solid rgba(225,229,223,.09)!important
-}
-.w-\[420px\].rounded-theme-panel>div.px-6.py-5:before{
- content:'02  APPEARANCE TERMINAL';display:block;position:absolute;top:11px;left:17px;color:#b79b58;font-size:8px;font-weight:900;letter-spacing:.15em
-}
-.w-\[420px\].rounded-theme-panel>div.px-6.py-5:after{
- content:'DELTA HORIZON // IDENTITY CONFIGURATION';display:block;position:absolute;top:12px;right:17px;color:rgba(220,224,219,.28);font-size:6.5px;font-weight:800;letter-spacing:.12em
-}
-.w-\[420px\].rounded-theme-panel h1{
- color:#e7e9e5!important;-webkit-text-fill-color:#e7e9e5!important;background:none!important;text-shadow:0 2px 14px rgba(0,0,0,.64)!important;
- text-align:left!important;font-family:var(--theme-font-display)!important;font-size:26px!important;font-weight:800!important;letter-spacing:.08em!important;line-height:1!important
+:root,
+.theme-creator,
+.theme-ponsonbys,
+.theme-binco,
+.theme-suburban,
+.theme-barber,
+.theme-tattoo,
+.theme-surgeon,
+.theme-wardrobe,
+.theme-clothingroom,
+.theme-playeroutfitroom {
+  --theme-font-sans: 'Space Grotesk', Arial, sans-serif !important;
+  --theme-font-display: 'Space Grotesk', Arial, sans-serif !important;
+
+  --theme-bg-base: rgba(8, 12, 13, .92) !important;
+  --theme-bg-panel: rgba(12, 17, 19, .83) !important;
+  --theme-bg-card: rgba(24, 30, 30, .76) !important;
+  --theme-bg-card-hover: rgba(39, 46, 44, .86) !important;
+  --theme-bg-card-active: rgba(53, 53, 41, .82) !important;
+
+  --theme-accent: #c8a04a !important;
+  --theme-accent-rgb: 200, 160, 74 !important;
+  --theme-accent-hover: #e2bb6a !important;
+  --theme-accent-border: rgba(200, 160, 74, .41) !important;
+  --theme-accent-bg: rgba(200, 160, 74, .13) !important;
+
+  --theme-text-primary: #f0f2ed !important;
+  --theme-text-secondary: #c4c9c2 !important;
+  --theme-text-muted: #a0aaa3 !important;
+  --theme-border-base: rgba(207, 219, 206, .16) !important;
+
+  --theme-border-radius-panel: 7px !important;
+  --theme-border-radius-card: 5px !important;
 }
 
-/* Side tool rails */
-.w-20.rounded-theme-panel{width:64px!important;padding-top:12px!important;padding-bottom:12px!important;gap:7px!important;background:rgba(6,8,9,.76)!important}
-.w-20.rounded-theme-panel button,.w-20.rounded-theme-panel>div.w-12{width:40px!important;height:40px!important;border-radius:1px!important;background:rgba(10,12,13,.72)!important;border-color:rgba(222,226,220,.09)!important;box-shadow:inset 0 0 12px rgba(0,0,0,.18)!important}
-.w-20.rounded-theme-panel button:hover{transform:none!important;border-color:rgba(183,155,88,.52)!important;background:rgba(34,31,24,.70)!important}
-.w-20.rounded-theme-panel button.text-theme-accent{border-color:rgba(183,155,88,.65)!important;background:linear-gradient(135deg,rgba(183,155,88,.13),rgba(8,10,11,.72))!important;box-shadow:inset 3px 0 0 rgba(183,155,88,.82)!important}
-
-/* Cards */
-.rounded-theme-card{background:rgba(9,11,12,.68)!important;border-color:rgba(222,226,220,.08)!important;box-shadow:inset 0 0 14px rgba(0,0,0,.16)!important}
-.rounded-theme-card:hover{border-color:rgba(183,155,88,.26)!important}
-.rounded-theme-card h2{color:rgba(225,228,223,.72)!important;font-family:var(--theme-font-display)!important;letter-spacing:.13em!important}
-
-/* Form controls */
-.theme-aware-stepper,input[type=text],input[type=number],select,textarea{border-radius:1px!important;background:rgba(4,6,7,.62)!important;border:1px solid rgba(222,226,220,.08)!important;box-shadow:inset 0 0 10px rgba(0,0,0,.22)!important}
-.theme-aware-stepper button{border-radius:0!important;border-color:rgba(222,226,220,.055)!important}
-.range-slider-track{height:3px!important;border-radius:0!important;border:0!important;background:rgba(255,255,255,.07)!important}
-.range-slider-fill{border-radius:0!important;background:linear-gradient(90deg,#7b6638,#b79b58)!important;box-shadow:none!important}
-.range-slider-thumb{width:8px!important;height:13px!important;border-radius:0!important;border:1px solid rgba(235,225,198,.78)!important;background:#b79b58!important;box-shadow:0 0 8px rgba(183,155,88,.22)!important}
-.theme-aware-swatch{border-radius:1px!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.45)!important}
-
-/* Secondary panels and outfit/light terminals */
-.w-72.rounded-theme-panel,.w-80.rounded-theme-panel{padding:14px!important;background:rgba(6,8,9,.86)!important;border-radius:1px!important}
-.outfit-card{border-radius:1px!important;background:linear-gradient(135deg,rgba(8,10,11,.78),rgba(5,7,8,.58))!important;border-color:rgba(183,155,88,.14)!important;box-shadow:none!important}
-.outfit-icon-box,.outfit-item-icon,.empty-icon-box{border-radius:1px!important;background:rgba(183,155,88,.055)!important;border-color:rgba(183,155,88,.20)!important}
-.save-outfit-btn,.save-confirm-btn{border-radius:1px!important;background:linear-gradient(90deg,rgba(183,155,88,.18),rgba(183,155,88,.06))!important;border-color:rgba(183,155,88,.36)!important;color:#d7c18a!important;box-shadow:none!important}
-.cancel-btn{border-radius:1px!important}
-
-/* Generic section action buttons */
-button[class*='bg-theme-accent']{border-radius:1px!important;background:linear-gradient(90deg,rgba(183,155,88,.20),rgba(183,155,88,.09))!important;border:1px solid rgba(183,155,88,.38)!important;color:#e2ca8f!important;box-shadow:none!important}
-button[class*='emerald']{filter:saturate(.58) brightness(.92)}
-button[class*='red']{filter:saturate(.65) brightness(.92)}
-
-/* Selection/highlight language */
-.border-theme-accent,.border-theme-accent-border{border-color:rgba(183,155,88,.52)!important}
-.text-theme-accent{color:#c5aa69!important}
-.bg-theme-accent{background:#9c8248!important}
-
-/* Modal fallback selectors */
-.fixed.inset-0.z-\[999999\]>.absolute.inset-0{background:rgba(0,0,0,.78)!important}
-.fixed.inset-0.z-\[999999\]>.relative.flex.flex-col{border-radius:1px!important;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px),rgba(7,9,10,.97)!important;border-color:rgba(222,226,220,.10)!important;box-shadow:0 26px 60px rgba(0,0,0,.72),inset 3px 0 0 rgba(183,155,88,.46)!important}
-
-@media(max-height:900px){
- .w-\[420px\].rounded-theme-panel{width:405px!important}
- .w-20.rounded-theme-panel{width:58px!important;padding-top:9px!important;padding-bottom:9px!important}
- .w-20.rounded-theme-panel button,.w-20.rounded-theme-panel>div.w-12{width:36px!important;height:36px!important}
- .w-\[420px\].rounded-theme-panel>div.px-6.py-5{min-height:75px!important;padding:10px 14px!important}
+html, body, #app {
+  background: transparent !important;
 }
 
-/* DT runtime class hooks (compiled JS patched to expose these classes). */
-.dt-apocalypse-main-panel,.dt-apocalypse-sidebar,.dt-apocalypse-utility-panel{border-color:rgba(225,229,223,.10)!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.42),inset 0 0 30px rgba(0,0,0,.24),0 18px 44px rgba(0,0,0,.34)!important}
-.dt-apocalypse-main-panel{width:430px!important;background:rgba(6,8,9,.76)!important}
-.dt-apocalypse-sidebar{width:64px!important;padding-top:12px!important;padding-bottom:12px!important;gap:7px!important;background:rgba(6,8,9,.76)!important}
-.dt-apocalypse-sidebar button,.dt-apocalypse-sidebar>div[class*=w-12]{width:40px!important;height:40px!important;border-radius:1px!important;background:rgba(10,12,13,.72)!important;border-color:rgba(222,226,220,.09)!important;box-shadow:inset 0 0 12px rgba(0,0,0,.18)!important}
-.dt-apocalypse-sidebar button:hover{transform:none!important;border-color:rgba(183,155,88,.52)!important;background:rgba(34,31,24,.70)!important}
-.dt-apocalypse-header{min-height:92px!important;padding:14px 18px 12px!important;align-items:flex-start!important;justify-content:flex-end!important;background:linear-gradient(90deg,rgba(183,155,88,.08),transparent 70%),rgba(5,7,8,.62)!important;border-bottom:1px solid rgba(225,229,223,.09)!important}
-.dt-apocalypse-header:before{content:'02  APPEARANCE TERMINAL';position:absolute;top:11px;left:18px;color:#b79b58;font-size:8px;font-weight:900;letter-spacing:.15em}
-.dt-apocalypse-header:after{content:'DELTA HORIZON // FIELD CUSTOMIZATION';position:absolute;top:12px;right:18px;color:rgba(220,224,219,.28);font-size:6.5px;font-weight:800;letter-spacing:.12em}
-.dt-apocalypse-header h1{color:#e7e9e5!important;-webkit-text-fill-color:#e7e9e5!important;background:none!important;text-shadow:0 2px 14px rgba(0,0,0,.64)!important;text-align:left!important;font-family:var(--theme-font-display)!important;font-size:26px!important;font-weight:800!important;letter-spacing:.08em!important;line-height:1!important}
-.dt-apocalypse-card{background:rgba(9,11,12,.68)!important;border-color:rgba(222,226,220,.08)!important;box-shadow:inset 0 0 16px rgba(0,0,0,.18)!important}
-.dt-apocalypse-card>button{min-height:43px!important;padding:7px 10px!important;border-left:2px solid rgba(183,155,88,.26)!important;background:linear-gradient(90deg,rgba(183,155,88,.045),transparent 60%)!important}
-.dt-apocalypse-card h2{color:rgba(225,228,223,.72)!important;font-size:10px!important;letter-spacing:.13em!important}
-.dt-apocalypse-utility-panel{background:rgba(6,8,9,.86)!important;padding:14px!important;border-radius:1px!important}
-@media(max-height:900px){.dt-apocalypse-main-panel{width:405px!important}.dt-apocalypse-header{min-height:76px!important;padding:10px 14px!important}.dt-apocalypse-sidebar{width:58px!important;padding-top:9px!important;padding-bottom:9px!important}.dt-apocalypse-sidebar button,.dt-apocalypse-sidebar>div[class*=w-12]{width:36px!important;height:36px!important}}
+body, button, input, select, textarea {
+  font-family: 'Space Grotesk', Arial, sans-serif !important;
+}
+
+.dt-apocalypse-main-panel,
+.dt-apocalypse-sidebar,
+.dt-apocalypse-utility-panel {
+  background: rgba(11, 16, 18, .83) !important;
+  border: 1px solid rgba(200, 160, 74, .22) !important;
+  border-radius: 7px !important;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(232, 228, 207, .04) !important;
+  backdrop-filter: blur(15px);
+}
+
+/* Keep the transparent UI surface and the game camera visible. */
+
+.dt-apocalypse-main-panel::after {
+  background: linear-gradient(180deg, rgba(16, 22, 24, .28), rgba(9, 13, 14, .28)) !important;
+}
+
+.dt-apocalypse-main-panel::before,
+.dt-apocalypse-sidebar::before,
+.dt-apocalypse-utility-panel::before {
+  opacity: .23 !important;
+}
+
+.dt-apocalypse-main-panel canvas,
+.dt-apocalypse-sidebar canvas,
+.dt-apocalypse-utility-panel canvas {
+  opacity: .11 !important;
+}
+
+.dt-apocalypse-main-panel {
+  width: 430px !important;
+  min-width: 0;
+}
+
+.dt-apocalypse-sidebar {
+  width: 66px !important;
+  gap: 7px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+/* Navigation should remain legible at 1080p without enlarging its rail. */
+
+.dt-apocalypse-sidebar button,
+.dt-apocalypse-sidebar > div[class*='w-12'] {
+  width: 43px !important;
+  height: 43px !important;
+  border-radius: 5px !important;
+  border-color: rgba(208, 215, 206, .18) !important;
+  background: rgba(20, 26, 27, .64) !important;
+  box-shadow: none !important;
+}
+
+.dt-apocalypse-sidebar button:hover {
+  background: rgba(55, 47, 31, .70) !important;
+  border-color: rgba(200, 160, 74, .60) !important;
+  transform: none !important;
+}
+
+.dt-apocalypse-sidebar button.text-theme-accent,
+.dt-apocalypse-sidebar button[class*='text-theme-accent'] {
+  background: rgba(200, 160, 74, .14) !important;
+  border-color: #c8a04a !important;
+  box-shadow: inset 3px 0 0 #c8a04a !important;
+}
+
+.dt-apocalypse-sidebar .group > div[class*='opacity-0'] {
+  background: rgba(10, 15, 17, .98) !important;
+  color: #f0f2ed !important;
+  border: 1px solid rgba(200, 160, 74, .43) !important;
+  border-radius: 5px !important;
+  font-size: 11px !important;
+  letter-spacing: .04em !important;
+}
+
+/* Brand block: small but clearly readable headings. */
+
+.dt-apocalypse-header {
+  min-height: 100px !important;
+  padding: 15px 17px 12px !important;
+  background: linear-gradient(100deg, rgba(200, 160, 74, .12), transparent 74%), rgba(9, 14, 16, .72) !important;
+  border-bottom: 1px solid rgba(200, 160, 74, .22) !important;
+}
+
+.dt-apocalypse-brand {
+  color: #b7c0b7 !important;
+  font-size: 10px !important;
+  letter-spacing: .07em !important;
+}
+
+.dt-apocalypse-index {
+  color: #e1c17d !important;
+  font-size: 10px !important;
+}
+
+.dt-apocalypse-header-title {
+  color: #f0f2ed !important;
+  -webkit-text-fill-color: #f0f2ed !important;
+  font-family: var(--theme-font-display) !important;
+  font-weight: 700 !important;
+  font-size: 23px !important;
+  letter-spacing: .02em !important;
+  line-height: 1.15 !important;
+}
+
+.dt-apocalypse-header-subtitle {
+  color: #c3b48f !important;
+  font-size: 10px !important;
+  letter-spacing: .08em !important;
+}
+
+/* Panel categories, rows and editable fields. */
+
+.rounded-theme-panel,
+.rounded-theme-card,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded {
+  border-radius: 5px !important;
+}
+
+.dt-apocalypse-card {
+  background: rgba(20, 27, 28, .70) !important;
+  border: 1px solid rgba(200, 160, 74, .14) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+.dt-apocalypse-card > button {
+  min-height: 45px !important;
+  border-left: 2px solid rgba(200, 160, 74, .54) !important;
+  background: linear-gradient(90deg, rgba(200, 160, 74, .09), transparent 75%) !important;
+}
+
+.dt-apocalypse-card h2 {
+  font-size: 12px !important;
+  color: #e7e8e1 !important;
+  letter-spacing: .045em !important;
+}
+
+.dt-apocalypse-card button div[class*='w-8'] {
+  width: 29px !important;
+  height: 29px !important;
+  background: rgba(200, 160, 74, .10) !important;
+  border-radius: 4px !important;
+}
+
+.theme-aware-stepper,
+input[type='text'],
+input[type='number'],
+input[type='search'],
+select,
+textarea {
+  color: #eef0eb !important;
+  background: rgba(9, 14, 16, .77) !important;
+  border: 1px solid rgba(212, 218, 204, .22) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 1px solid rgba(200, 160, 74, .78) !important;
+  outline-offset: 0 !important;
+}
+
+.theme-aware-stepper button {
+  border-radius: 4px !important;
+  border-color: rgba(200, 160, 74, .15) !important;
+}
+
+/* Sliders retain native functionality and thumb hit targets. */
+
+.range-slider-track {
+  height: 4px !important;
+  border-radius: 4px !important;
+  background: rgba(224, 231, 221, .14) !important;
+}
+
+.range-slider-fill {
+  border-radius: 4px !important;
+  background: #c8a04a !important;
+}
+
+.range-slider-thumb {
+  width: 12px !important;
+  height: 16px !important;
+  border: 2px solid #ead8b3 !important;
+  border-radius: 4px !important;
+  background: #c8a04a !important;
+  box-shadow: 0 0 0 2px rgba(8, 12, 13, .6) !important;
+}
+
+.theme-aware-swatch,
+.theme-aware-stepper {
+  border-radius: 4px !important;
+}
+
+.theme-aware-swatch.active-swatch {
+  border-color: #c8a04a !important;
+  box-shadow: 0 0 0 1px #c8a04a !important;
+}
+
+/* Preserve semantic save and cancel states. */
+
+.dt-sidebar-save,
+.dt-sidebar-exit {
+  filter: none !important;
+}
+
+.dt-creator-actionbar {
+  border-top: 1px solid rgba(200, 160, 74, .28) !important;
+  background: rgba(10, 16, 18, .92) !important;
+}
+
+.dt-creator-actionbar-inner {
+  min-height: 60px !important;
+}
+
+.dt-creator-actionbar button {
+  border-radius: 5px !important;
+  font-size: 12px !important;
+  letter-spacing: .04em !important;
+}
+
+.dt-creator-actionbar button:first-child {
+  background: rgba(38, 44, 44, .92) !important;
+  border: 1px solid rgba(224, 232, 221, .16) !important;
+}
+
+.dt-creator-actionbar button:last-child {
+  background: rgba(200, 160, 74, .17) !important;
+  border: 1px solid rgba(200, 160, 74, .52) !important;
+  color: #f3e0b6 !important;
+}
+
+.dt-apocalypse-modal {
+  border-radius: 7px !important;
+  border: 1px solid rgba(200, 160, 74, .36) !important;
+  background: rgba(10, 15, 16, .97) !important;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, .56) !important;
+}
+
+.dt-apocalypse-modal-backdrop {
+  background: rgba(0, 0, 0, .58) !important;
+}
+
+/* Scrollbars, contrast and smaller screen support. */
+
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 160, 74, .56) !important;
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(220, 224, 214, .03) !important;
+}
+
+@media (max-height: 900px) {
+  .dt-apocalypse-main-panel {
+    width: 410px !important;
+  }
+  .dt-apocalypse-sidebar {
+    width: 62px !important;
+  }
+  .dt-apocalypse-sidebar button,
+  .dt-apocalypse-sidebar > div[class*='w-12'] {
+    width: 39px !important;
+    height: 39px !important;
+  }
+  .dt-apocalypse-header {
+    min-height: 87px !important;
+    padding: 12px 14px 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-apocalypse-main-panel *,
+  .dt-apocalypse-sidebar *,
+  .dt-apocalypse-utility-panel * {
+    transition-duration: .01ms !important;
+  }
+}
