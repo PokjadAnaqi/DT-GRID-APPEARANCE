@@ -1,0 +1,155 @@
+name: DT GRID APPEARANCE Beta 4 Overlay Integration
+
+on:
+  push:
+    branches:
+      - beta4-tattoo-overlay-integration
+    paths:
+      - ".github/workflows/dtgrid-beta4.yml"
+      - "client/**"
+      - "server/**"
+      - "shared/**"
+      - "web/src/**"
+      - "fxmanifest.lua"
+      - "tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Beta 4
+        uses: actions/checkout@v4
+        with:
+          ref: beta4-tattoo-overlay-integration
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Validate Lua syntax and pack builder
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.4
+          luac5.4 -p client/dt_custom_tattoos.lua server/dt_custom_tattoos.lua server/dt_tattoo_pack_bridge.lua shared/custom_tattoos.lua
+          node --check tools/build-custom-tattoo.mjs
+          node -e "const p = require('./tools/tattoo-placement.sample.json'); if (!p.zone || !p.uvPos || !p.scale) process.exit(1)"
+          grep -q "server/dt_tattoo_pack_bridge.lua" fxmanifest.lua
+          grep -q "StreamedCollections" shared/custom_tattoos.lua
+          grep -q 'version "1.0.0-beta.4"' fxmanifest.lua
+          grep -q "PurchaseEnabled = false" shared/custom_tattoos.lua
+
+      - name: Compile Vue production UI
+        working-directory: web
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Validate compiled UI
+        shell: bash
+        run: |
+          test -s web/dist/index.html
+          test -n "$(find web/dist/assets -name '*.js' -size +0c -print -quit)"
+          grep -R -q 'dtgrid_tattoos_activate' web/src
+          grep -q 'dtgrid:tattoos:activate' server/dt_custom_tattoos.lua
+
+      - name: Commit compiled web assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u web/dist
+          git add -f web/dist/index.html web/dist/assets/
+          if ! git diff --cached --quiet; then
+            git commit -m "build: compile Beta 4 tattoo overlay integration NUI"
+            git push origin HEAD:beta4-tattoo-overlay-integration
+          fi
+
+      - name: Package full resource
+        shell: bash
+        run: |
+          mkdir -p dist-release
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          output = Path('dist-release/DT_GRID_APPEARANCE_v1.0.0-beta.4_OVERLAY_INTEGRATION_FULL.zip')
+          excluded = {'.git', '.github', 'build', 'node_modules', 'dist-release', '__pycache__'}
+          with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+              for file in sorted(Path('.').rglob('*')):
+                  if not file.is_file() or any(p in excluded for p in file.parts):
+                      continue
+                  if file.name.endswith('.beta3-backup'):
+                      continue
+                  z.write(file, 'illenium-appearance/' + file.as_posix())
+          with zipfile.ZipFile(output) as z:
+              assert z.testzip() is None
+              paths = set(z.namelist())
+              required = [
+                  'illenium-appearance/fxmanifest.lua',
+                  'illenium-appearance/web/dist/index.html',
+                  'illenium-appearance/server/dt_tattoo_pack_bridge.lua',
+                  'illenium-appearance/tools/build-custom-tattoo.mjs',
+                  'illenium-appearance/docs/CUSTOM_TATTOO_STREAMING.md',
+              ]
+              assert all(name in paths for name in required)
+          print(output, output.stat().st_size)
+          PY
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DT_GRID_APPEARANCE_BETA4_FULL
+          path: dist-release/*.zip
+
+      - name: Publish technical pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/release_notes.md" <<'NOTES'
+          ## DT GRID APPEARANCE v1.0.0-beta.4 — Tattoo Overlay Integration Preview
+
+          Development-only integration of genuine GTA tattoo overlays with the existing
+          API69 Custom Tattoo Studio and character-specific tattoo library.
+
+          - Export saved PNG/text draft from server console: dtgridtattoo:export <id>
+          - Build a male/female FiveM overlay pack externally with GTAX API (optional) or Atelier.
+          - Register an installed streamed collection by an administrator.
+          - Test approved overlays with real ped decoration hashes through the existing Illenium appearance integration.
+          - Prevent double charging standard tattoos with per-tattoo pricing.
+          - Require an approved streamed collection before a design can be worn.
+          - Optional delayed 300 DTC payment only after overlay registration; disabled by default.
+
+          **Not a live tattoo generation service.** New PNGs do not immediately appear on the
+          ped. A valid YTD + PedDecorationCollection pack must be generated externally,
+          installed, streamed by the server and loaded after a restart/reconnect.
+          The Beta 3 X/Y placement sliders are a 2D guide only, not GTA UV coordinates.
+
+          **Payment safe default:** Config.CustomTattoo.PurchaseEnabled = false.
+          No 300 DTC is charged for drafts. Do not enable purchases without a verified
+          live multiplayer test and a working refund procedure.
+
+          No third-party GTAX/Atelier source code is embedded. The optional GTAX builder
+          requires an API key on an administrator-controlled machine, not in FiveM.
+
+          See docs/CUSTOM_TATTOO_STREAMING.md inside the ZIP.
+          Runtime resource remains illenium-appearance; back up database and config.
+          DTlib integration baseline: v1.4.0-beta.6.
+          NOTES
+          gh release create v1.0.0-beta.4 dist-release/*.zip \
+            --target beta4-tattoo-overlay-integration \
+            --prerelease \
+            --title "DT GRID APPEARANCE v1.0.0-beta.4 — Streamed Tattoo Integration Preview" \
+            --notes-file "$RUNNER_TEMP/release_notes.md"
