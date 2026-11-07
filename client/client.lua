@@ -255,7 +255,9 @@ end
 
 function OpenShop(config, isPedMenu, shopType)
     lib.callback("illenium-appearance:server:hasMoney", false, function(hasMoney, money)
-        if not hasMoney and not isPedMenu then
+        -- Per-item tattoo pricing is handled by the tattoo purchase callback.
+        local entryFee = shopType ~= "tattoo" or not Config.ChargePerTattoo
+        if not hasMoney and not isPedMenu and entryFee then
             local fallbackCost = shopType == "clothing" and Config.ClothingCost
                 or shopType == "barber" and Config.BarberCost
                 or shopType == "tattoo" and Config.TattooCost
@@ -301,7 +303,7 @@ function OpenShop(config, isPedMenu, shopType)
             end
 
             if appearance then
-                if not isPedMenu then
+                if not isPedMenu and (shopType ~= "tattoo" or not Config.ChargePerTattoo) then
                     TriggerServerEvent("illenium-appearance:server:chargeCustomer", shopType)
                 end
 
