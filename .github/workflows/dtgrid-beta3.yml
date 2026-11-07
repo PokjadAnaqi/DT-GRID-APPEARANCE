@@ -39,6 +39,23 @@ jobs:
           python3 "$RUNNER_TEMP/dtgrid-beta3/apply_patch.py" .
           find . -type f -name '*.beta3-backup' -delete
 
+      - name: Fix editor compatibility for TypeScript target
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('web/src/components/sections/CustomTattooStudio.vue')
+          current = source.read_text()
+          old = ".replaceAll('_', ' ')"
+          assert current.count(old) == 1, 'Expected one compatibility replacement'
+          source.write_text(current.replace(old, ".replace(/_/g, ' ')"))
+          manifest = Path('fxmanifest.lua')
+          current = manifest.read_text()
+          old = 'version "1.0.0-beta.3-dev.1"'
+          assert current.count(old) == 1
+          manifest.write_text(current.replace(old, 'version "1.0.0-beta.3"'))
+          PY
+
       - name: Build production NUI
         working-directory: web
         run: |
@@ -51,7 +68,7 @@ jobs:
           set -euo pipefail
           test -s web/dist/index.html
           test -s web/dist/assets/index.js || ls -l web/dist/assets
-          grep -q '1.0.0-beta.3-dev.1' fxmanifest.lua
+          grep -q '1.0.0-beta.3' fxmanifest.lua
           grep -q 'PurchaseEnabled = false' shared/custom_tattoos.lua
           python3 - <<'PY'
           from pathlib import Path
