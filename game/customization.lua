@@ -679,97 +679,93 @@ client.removeClothes = removeClothes
 local playerHeading
 function client.getHeading() return playerHeading end
 
--- Temporarily suspend external HUDs for the whole appearance NUI lifecycle.
--- Do not use /tracker: it changes the player's persistent quest tracker setting.
+-- Suspend gameplay overlays only while the appearance editor owns focus.
+-- DTlib v1.4.0-beta.6 preserves quest tracker /tracker preferences and restores
+-- temperature and radiation through its token-based UI lifecycle.
 local appearanceHudHidden = false
-local questTrackerRestoreVisible
-local questTrackerOverrideUsed = false
+local appearanceSuspendToken = nil
+local appearanceFallbackActive = false
 
-local function setHudResourceVisible(resource, method, show)
-    if GetResourceState(resource) ~= 'started' then return end
+local function callHudExport(resource, method, visible)
+    if GetResourceState(resource) ~= 'started' then return false end
 
-    local ok, errorMessage = pcall(function()
-        exports[resource][method](exports[resource], show)
+    local ok, result = pcall(function()
+        local handle = exports[resource]
+        return handle[method](handle, visible)
     end)
 
     if not ok then
-        print(('[illenium-appearance] HUD %s: %s'):format(resource, tostring(errorMessage)))
+        print(('[illenium-appearance] %s HUD visibility failed: %s'):format(
+            resource, tostring(result)
+        ))
     end
-end
 
-local function callQuestTrackerExport(method, show)
-    local ok = pcall(function()
-        exports['DT_questsystem'][method](exports['DT_questsystem'], show)
-    end)
     return ok
 end
 
-local function setQuestTrackerVisible(show)
+local function toggleFallbackQuestTracker(hidden)
     if GetResourceState('DT_questsystem') ~= 'started' then return end
 
-    if not show then
-        questTrackerRestoreVisible = nil
+    local methods = {
+        'SetTrackerSuppressed',
+        'SetTemporaryTrackerHidden',
+        'SetTrackerHidden',
+    }
 
-        -- Prefer preserving an already-hidden tracker when a visibility getter exists.
-        for _, method in ipairs({ 'IsTrackerVisible', 'GetTrackerVisible', 'IsQuestTrackerVisible' }) do
-            local ok, value = pcall(function()
-                return exports['DT_questsystem'][method](exports['DT_questsystem'])
+    for index = 1, #methods do
+        local method = methods[index]
+        local ok = pcall(function()
+            local handle = exports['DT_questsystem']
+            handle[method](handle, hidden, 'appearance')
+        end)
+        if ok then break end
+    end
+
+    TriggerEvent('DT_questsystem:client:setTrackerSuppressed', hidden, 'appearance')
+    TriggerEvent('DT_questsystem:client:setTemporaryUIHidden', hidden, 'appearance')
+    TriggerEvent('DT_questsystem:client:setPlacementHidden', hidden, 'appearance')
+end
+
+local function setAppearanceHudVisible(visible)
+    if appearanceHudHidden == (not visible) then return end
+    appearanceHudHidden = not visible
+
+    if not visible then
+        if GetResourceState('DTlib') == 'started' then
+            local ok, token = pcall(function()
+                return exports['DTlib']:UISuspend('appearance')
             end)
-            if ok and type(value) == 'boolean' then
-                questTrackerRestoreVisible = value
-                break
+            if ok and type(token) == 'string' then
+                appearanceSuspendToken = token
             end
         end
 
-        if questTrackerRestoreVisible == false then return end
-    elseif not questTrackerOverrideUsed then
-        return
-    end
+        if not appearanceSuspendToken then
+            appearanceFallbackActive = true
+            callHudExport('0r-hud-v3', 'ToggleVisible', false)
+            callHudExport('DT_temperature', 'ToggleVisible', false)
+            callHudExport('DT_radiation', 'ToggleVisible', false)
+            toggleFallbackQuestTracker(true)
+        end
+    else
+        local token = appearanceSuspendToken
+        appearanceSuspendToken = nil
 
-    local visibility = show
-    if show and questTrackerRestoreVisible ~= nil then
-        visibility = questTrackerRestoreVisible
-    end
+        if token and GetResourceState('DTlib') == 'started' then
+            pcall(function() exports['DTlib']:UIResume(token) end)
+        end
 
-    local supported = false
-    for _, method in ipairs({
-        'SetTrackerVisible',
-        'SetTrackerVisibility',
-        'SetQuestTrackerVisible',
-        'SetQuestTrackerVisibility',
-        'ToggleTrackerVisibility',
-        'ToggleVisible'
-    }) do
-        if callQuestTrackerExport(method, visibility) then
-            supported = true
-            break
+        if appearanceFallbackActive then
+            appearanceFallbackActive = false
+            callHudExport('0r-hud-v3', 'ToggleVisible', true)
+            callHudExport('DT_temperature', 'ToggleVisible', true)
+            callHudExport('DT_radiation', 'ToggleVisible', true)
+            toggleFallbackQuestTracker(false)
         end
     end
 
-    if not show then
-        questTrackerOverrideUsed = supported
-    else
-        questTrackerOverrideUsed = false
-        questTrackerRestoreVisible = nil
-    end
-
-    -- Optional hook for quest versions without a public export.
-    -- The quest resource may listen to this event without storing player preferences.
-    TriggerEvent('illenium-appearance:client:questTrackerVisibility', visibility)
-end
-
-local function setAppearanceHudVisible(show)
-    if appearanceHudHidden == (not show) then return end
-    appearanceHudHidden = not show
-
-    setHudResourceVisible('0r-hud-v3', 'ToggleVisible', show)
-    setHudResourceVisible('DT_survival_hud', 'hudVisibility', show)
-    setHudResourceVisible('DT_temperature', 'ToggleVisible', show)
-    setHudResourceVisible('DT_radiation', 'ToggleVisible', show)
-    setQuestTrackerVisible(show)
-
-    -- Other DT scripts can subscribe to this transient lifecycle event.
-    TriggerEvent('illenium-appearance:client:hudVisibility', show)
+    -- DT survival HUD uses its own export and is not in DTlib's stock adapter.
+    callHudExport('DT_survival_hud', 'hudVisibility', visible)
 end
 
 local callback
