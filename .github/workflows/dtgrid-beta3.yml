@@ -1,0 +1,139 @@
+name: DT GRID APPEARANCE Beta 3 Pre-release
+
+on:
+  push:
+    branches:
+      - beta3-api69-tattoo-studio
+    paths:
+      - ".github/workflows/dtgrid-beta3.yml"
+      - "build/beta3-source.tar.gz.b64"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  beta3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Beta 3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: beta3-api69-tattoo-studio
+          persist-credentials: true
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Apply Beta 3 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/dtgrid-beta3"
+          base64 --decode build/beta3-source.tar.gz.b64 | tar -xz -C "$RUNNER_TEMP/dtgrid-beta3"
+          python3 "$RUNNER_TEMP/dtgrid-beta3/apply_patch.py" . --dry-run
+          python3 "$RUNNER_TEMP/dtgrid-beta3/apply_patch.py" .
+          find . -type f -name '*.beta3-backup' -delete
+
+      - name: Build production NUI
+        working-directory: web
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Validate full resource
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web/dist/index.html
+          test -s web/dist/assets/index.js || ls -l web/dist/assets
+          grep -q '1.0.0-beta.3-dev.1' fxmanifest.lua
+          grep -q 'PurchaseEnabled = false' shared/custom_tattoos.lua
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          manifest = Path('fxmanifest.lua').read_text()
+          assert 'web/dist/index.html' in manifest
+          assert 'server/dt_custom_tattoos.lua' in manifest
+          assert Path('web/src/components/sections/CustomTattooStudio.vue').exists()
+          assert Path('sql/custom_tattoos.sql').exists()
+          assert re.search(r'index-[\\w-]+\\.js', Path('web/dist/index.html').read_text()) or list(Path('web/dist/assets').glob('*.js'))
+          PY
+
+      - name: Commit compiled Beta 3 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- ':!build/beta3-source.tar.gz.b64'
+          git add -f web/dist/index.html web/dist/assets/
+          if ! git diff --cached --quiet; then
+            git commit -m "feat: API69 theme and tattoo studio Beta 3 compiled preview"
+            git push origin HEAD:beta3-api69-tattoo-studio
+          fi
+
+      - name: Package full installable ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-release
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root = Path('.')
+          output = Path('dist-release/DT_GRID_APPEARANCE_v1.0.0-beta.3_API69_TATTOO_STUDIO_FULL.zip')
+          excluded = {'.git', '.github', 'build', 'node_modules', 'dist-release', '__pycache__'}
+          with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+              for f in sorted(root.rglob('*')):
+                  if not f.is_file() or any(p in excluded for p in f.parts):
+                      continue
+                  if f.name.endswith('.beta3-backup'):
+                      continue
+                  archive.write(f, 'illenium-appearance/' + f.as_posix())
+          with zipfile.ZipFile(output) as archive:
+              assert archive.testzip() is None
+              names = set(archive.namelist())
+              assert 'illenium-appearance/fxmanifest.lua' in names
+              assert 'illenium-appearance/web/dist/index.html' in names
+          print(output, output.stat().st_size)
+          PY
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DT_GRID_APPEARANCE_BETA3_FULL
+          path: dist-release/*.zip
+
+      - name: Publish Beta 3 pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/release_notes.md" <<'NOTES'
+          ## DT GRID APPEARANCE v1.0.0-beta.3 — API69 + Tattoo Studio
+
+          Pre-release development preview, built from Beta 2.
+
+          - Unified API69 industrial theme for creator, clothing and services.
+          - Custom tattoo 2D editor: local PNG, HTTPS URL, text, typography, opacity, scale and rotation.
+          - Personal tattoo library persisted by character through oxmysql.
+          - GTA base tattoo catalog and clothing-as-items preserved.
+          - Server-authoritative standard tattoo pricing validation.
+
+          **Important limitations:** The custom PNG/text image is not yet mapped to the real GTA ped texture. Library entries are free, unpaid development drafts and cannot be worn. The planned 300 DTC payment is **disabled by default** (`Config.CustomTattoo.PurchaseEnabled = false`). This pre-release must not be presented as full dynamic on-ped tattoo support. No live FiveM multiplayer validation has been performed.
+
+          Install the FULL zip as `illenium-appearance`. Back up resource and database before testing. Requires oxmysql, ox_lib, ox_inventory and the configured framework.
+
+          Integration target: DTlib v1.4.0-beta.6.
+          NOTES
+          gh release create v1.0.0-beta.3 dist-release/*.zip \
+            --target beta3-api69-tattoo-studio \
+            --prerelease \
+            --title "DT GRID APPEARANCE v1.0.0-beta.3 — API69 Tattoo Studio Preview" \
+            --notes-file "$RUNNER_TEMP/release_notes.md"
