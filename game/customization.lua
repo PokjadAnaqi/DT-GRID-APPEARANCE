@@ -679,6 +679,99 @@ client.removeClothes = removeClothes
 local playerHeading
 function client.getHeading() return playerHeading end
 
+-- Temporarily suspend external HUDs for the whole appearance NUI lifecycle.
+-- Do not use /tracker: it changes the player's persistent quest tracker setting.
+local appearanceHudHidden = false
+local questTrackerRestoreVisible
+local questTrackerOverrideUsed = false
+
+local function setHudResourceVisible(resource, method, show)
+    if GetResourceState(resource) ~= 'started' then return end
+
+    local ok, errorMessage = pcall(function()
+        exports[resource][method](exports[resource], show)
+    end)
+
+    if not ok then
+        print(('[illenium-appearance] HUD %s: %s'):format(resource, tostring(errorMessage)))
+    end
+end
+
+local function callQuestTrackerExport(method, show)
+    local ok = pcall(function()
+        exports['DT_questsystem'][method](exports['DT_questsystem'], show)
+    end)
+    return ok
+end
+
+local function setQuestTrackerVisible(show)
+    if GetResourceState('DT_questsystem') ~= 'started' then return end
+
+    if not show then
+        questTrackerRestoreVisible = nil
+
+        -- Prefer preserving an already-hidden tracker when a visibility getter exists.
+        for _, method in ipairs({ 'IsTrackerVisible', 'GetTrackerVisible', 'IsQuestTrackerVisible' }) do
+            local ok, value = pcall(function()
+                return exports['DT_questsystem'][method](exports['DT_questsystem'])
+            end)
+            if ok and type(value) == 'boolean' then
+                questTrackerRestoreVisible = value
+                break
+            end
+        end
+
+        if questTrackerRestoreVisible == false then return end
+    elseif not questTrackerOverrideUsed then
+        return
+    end
+
+    local visibility = show
+    if show and questTrackerRestoreVisible ~= nil then
+        visibility = questTrackerRestoreVisible
+    end
+
+    local supported = false
+    for _, method in ipairs({
+        'SetTrackerVisible',
+        'SetTrackerVisibility',
+        'SetQuestTrackerVisible',
+        'SetQuestTrackerVisibility',
+        'ToggleTrackerVisibility',
+        'ToggleVisible'
+    }) do
+        if callQuestTrackerExport(method, visibility) then
+            supported = true
+            break
+        end
+    end
+
+    if not show then
+        questTrackerOverrideUsed = supported
+    else
+        questTrackerOverrideUsed = false
+        questTrackerRestoreVisible = nil
+    end
+
+    -- Optional hook for quest versions without a public export.
+    -- The quest resource may listen to this event without storing player preferences.
+    TriggerEvent('illenium-appearance:client:questTrackerVisibility', visibility)
+end
+
+local function setAppearanceHudVisible(show)
+    if appearanceHudHidden == (not show) then return end
+    appearanceHudHidden = not show
+
+    setHudResourceVisible('0r-hud-v3', 'ToggleVisible', show)
+    setHudResourceVisible('DT_survival_hud', 'hudVisibility', show)
+    setHudResourceVisible('DT_temperature', 'ToggleVisible', show)
+    setHudResourceVisible('DT_radiation', 'ToggleVisible', show)
+    setQuestTrackerVisible(show)
+
+    -- Other DT scripts can subscribe to this transient lifecycle event.
+    TriggerEvent('illenium-appearance:client:hudVisibility', show)
+end
+
 local callback
 function client.startPlayerCustomization(cb, conf)
     repeat Wait(0) until IsScreenFadedIn() and not IsPlayerTeleportActive() and not IsPlayerSwitchInProgress()
@@ -688,6 +781,7 @@ function client.startPlayerCustomization(cb, conf)
     playerHeading = GetEntityHeading(cache.ped)
 
     BackupPlayerStats()
+    setAppearanceHudVisible(false)
 
     callback = cb
     config = conf
@@ -720,6 +814,7 @@ function client.exitPlayerCustomization(appearance)
     SetNuiFocus(false, false)
 
     if Config.HideRadar then DisplayRadar(true) end
+    setAppearanceHudVisible(true)
 
     ClearPedTasksImmediately(cache.ped)
     SetEntityInvincible(cache.ped, false)
@@ -756,6 +851,7 @@ AddEventHandler("onResourceStop", function(resource)
     if resource == GetCurrentResourceName() then
         SetNuiFocus(false, false)
         SetNuiFocusKeepInput(false)
+        setAppearanceHudVisible(true)
     end
 end)
 
